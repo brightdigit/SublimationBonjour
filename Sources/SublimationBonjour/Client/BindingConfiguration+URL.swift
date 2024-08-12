@@ -1,5 +1,5 @@
 //
-//  BindingConfiguration.swift
+//  BindingConfiguration+URL.swift
 //  SublimationBonjour
 //
 //  Created by Leo Dion.
@@ -34,9 +34,9 @@
   internal import Network
 
   extension BindingConfiguration {
-    internal func urls(defaultIsSecure: Bool, defaultPort: Int) -> [URL] {
-      let isSecure = self.hasIsSecure ? self.isSecure : defaultIsSecure
-      let port = self.hasPort ? Int(self.port) : defaultPort
+    internal func urls(defaults: URLDefaultConfiguration) -> [URL] {
+      let isSecure = self.hasIsSecure ? self.isSecure : defaults.isSecure
+      let port = self.hasPort ? Int(self.port) : defaults.port
       return self.hosts.compactMap { host in
         if host.isLocalhost() { return nil }
         if host.isValidIPv6Address() { return nil }
