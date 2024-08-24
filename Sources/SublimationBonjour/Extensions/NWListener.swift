@@ -1,5 +1,5 @@
 //
-//  URLDefaultConfiguration.swift
+//  NWListener.swift
 //  SublimationBonjour
 //
 //  Created by Leo Dion.
@@ -27,22 +27,19 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-/// Default Configuration for URLs.
-///
-/// If the ``BindingConfiguration`` is missing properties such as
-/// ``BindingConfiguration/port`` or ``BindingConfiguration/isSecure``
-/// ``BonjourClient`` using these settings as fallback.
-public struct URLDefaultConfiguration {
-  /// Create the default configuration.
-  /// - Parameters:
-  ///   - isSecure: Whether https or http
-  ///   - port: HTTP Server port
-  public init(isSecure: Bool = false, port: Int = 8080) {
-    self.isSecure = isSecure
-    self.port = port
+#if canImport(Network)
+  import Foundation
+  public import Network
+
+  extension NWListener.State: @retroactive CustomDebugStringConvertible {
+    @_documentation(visibility: internal) public var debugDescription: String {
+      switch self { case .setup: "setup" case .waiting(let error):
+        "waiting: \(error.debugDescription)"
+        case .ready: "ready"
+        case .failed(let error): "failed: \(error.debugDescription)"
+        case .cancelled: "cancelled"
+        @unknown default: "unknown state"
+      }
+    }
   }
-  /// Whether https or http
-  public let isSecure: Bool
-  /// Server port number.
-  public let port: Int
-}
+#endif
