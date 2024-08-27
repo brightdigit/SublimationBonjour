@@ -16,7 +16,7 @@ Use Bonjour for automatic discovery of your Swift Server.
 [![Codecov](https://img.shields.io/codecov/c/github/brightdigit/SublimationBonjour)](https://codecov.io/gh/brightdigit/SublimationBonjour)
 -->
 [![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/brightdigit/SublimationBonjour)](https://www.codefactor.io/repository/github/brightdigit/SublimationBonjour)
-[![codebeat badge](https://codebeat.co/badges/54695d4b-98c8-4f0f-855e-215500163094)](https://codebeat.co/projects/github-com-brightdigit-SublimationBonjour-main)
+[![codebeat badge](https://codebeat.co/badges/88cc9ee4-5180-4ce5-93c6-a2e23dd532c3)](https://codebeat.co/projects/github-com-brightdigit-SublimationBonjour-main)
 [![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/brightdigit/SublimationBonjour)](https://codeclimate.com/github/brightdigit/SublimationBonjour)
 [![Code Climate technical debt](https://img.shields.io/codeclimate/tech-debt/brightdigit/SublimationBonjour?label=debt)](https://codeclimate.com/github/brightdigit/SublimationBonjour)
 [![Code Climate issues](https://img.shields.io/codeclimate/issues/brightdigit/SublimationBonjour)](https://codeclimate.com/github/brightdigit/SublimationBonjour)
