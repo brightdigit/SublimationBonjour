@@ -32,7 +32,7 @@
 /// If the ``BindingConfiguration`` is missing properties such as
 /// ``BindingConfiguration/port`` or ``BindingConfiguration/isSecure``
 /// ``BonjourClient`` using these settings as fallback.
-public struct URLDefaultConfiguration {
+public struct URLDefaultConfiguration: Sendable {
   /// Create the default configuration.
   /// - Parameters:
   ///   - isSecure: Whether https or http
