@@ -41,9 +41,8 @@ let package = Package(
     .library(name: "SublimationBonjour", targets: ["SublimationBonjour"])
   ],
   dependencies: [
-    .package(url: "https://github.com/brightdigit/Sublimation", from: "2.0.0-alpha.5"),
-    .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.26.0"),
-    .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0")
+    .package(path: "../Sublimation"),
+    .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.26.0")
   ],
   targets: [
     .target(
@@ -51,8 +50,7 @@ let package = Package(
       dependencies: [
         .product(name: "Sublimation", package: "Sublimation"),
         .product(name: "SublimationCore", package: "Sublimation"),
-        .product(name: "SwiftProtobuf", package: "swift-protobuf"),
-        .product(name: "Logging", package: "swift-log")
+        .product(name: "SwiftProtobuf", package: "swift-protobuf")
       ],
       swiftSettings: swiftSettings
     ),
