@@ -30,7 +30,7 @@
 #if canImport(Network)
   public import Foundation
 
-  import Network
+internal import Network
 
   #if canImport(os)
     public import os
