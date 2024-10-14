@@ -27,19 +27,14 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(Network)
+#if canImport(Network) && canImport(Logging)
 
   internal import Foundation
 
   public import Network
 
   public import SublimationCore
-
-#if canImport(os)
-public import os.log
-#elseif canImport(Logging)
-  public import Logging
-#endif
+public import Logging
 
   /// Sublimatory for using Bonjour auto-discovery.
   public struct BonjourSublimatory: Sublimatory {

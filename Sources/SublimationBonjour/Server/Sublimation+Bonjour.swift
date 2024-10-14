@@ -27,15 +27,10 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(Network)
+#if canImport(Network) && canImport(Logging)
   public import Network
   public import Sublimation
-
-#if canImport(os)
-  public import os
-#elseif canImport(Logging)
   public import Logging
-#endif
 
   /// Friendly extensions for setting up a `Sublimation` object for `Bonjour`
   extension Sublimation {
