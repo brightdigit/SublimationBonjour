@@ -1,22 +1,13 @@
 {
-  "originHash" : "2b9f814946e4952387f6691929b3d5d9a95ddbf99f1704f4beaab390f06560d6",
+  "originHash" : "eb6d44461edfa318c7714318cbf366fdaa85477ce7d75eb7670439f78984597b",
   "pins" : [
     {
       "identity" : "sublimation",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/brightdigit/Sublimation",
+      "location" : "https://github.com/brightdigit/Sublimation.git",
       "state" : {
-        "revision" : "99d0da9f907d27deb180582b274c5f83e6732921",
-        "version" : "2.0.0-beta.1"
-      }
-    },
-    {
-      "identity" : "swift-log",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-log.git",
-      "state" : {
-        "revision" : "9cb486020ebf03bfa5b5df985387a14a98744537",
-        "version" : "1.6.1"
+        "branch" : "remove-logging",
+        "revision" : "a342f5c67827329a7db1caa1c700da79fa40cc7d"
       }
     },
     {

@@ -34,7 +34,7 @@
   public import Network
 
   public import SublimationCore
-public import Logging
+  public import Logging
 
   /// Sublimatory for using Bonjour auto-discovery.
   public struct BonjourSublimatory: Sublimatory {
@@ -169,7 +169,6 @@ public import Logging
         connection.stateUpdateHandler = { state in
           switch state { case .waiting(let error):
 
-            
             logger.debug("Connection Waiting error: \(error.localizedDescription)")
 
             case .ready:
@@ -184,7 +183,7 @@ public import Logging
               )
             case .failed(let error): logger.debug("Connection Failure: \(error)")
 
-          default: logger.debug("Connection state updated: \(state.debugDescription)")
+            default: logger.debug("Connection state updated: \(state.debugDescription)")
           }
         }
         connection.start(queue: connectionQueue)

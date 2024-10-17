@@ -29,14 +29,7 @@
 
 #if canImport(Network)
   public import Foundation
-
-internal import Network
-
-  #if canImport(os)
-    public import os
-  #elseif canImport(Logging)
-    public import Logging
-  #endif
+  internal import Network
 
   /// Client for fetching the url of the host server.
   ///
@@ -46,9 +39,10 @@ internal import Network
   /// let hostURL = await depositor.first()
   /// ```
   public actor BonjourClient {
+
     private let browser: NWBrowser
     private let streams = StreamManager<UUID, URL>()
-    private let logger: Logger?
+    private let logger: LoggerType?
     private let defaultURLConfiguration: URLDefaultConfiguration
 
     /// AsyncStream of `URL` from the network.
@@ -76,7 +70,10 @@ internal import Network
     /// - Parameters:
     ///   - logger: Logger
     ///   - defaultURLConfiguration: default ``URL`` configuration for missing properties.
-    public init(logger: Logger? = nil, defaultURLConfiguration: URLDefaultConfiguration = .init()) {
+    public init(
+      logger: LoggerType? = nil,
+      defaultURLConfiguration: URLDefaultConfiguration = .init()
+    ) {
       assert(logger != nil)
       let descriptor: NWBrowser.Descriptor
       descriptor = .bonjourWithTXTRecord(type: "_sublimation._tcp", domain: nil)

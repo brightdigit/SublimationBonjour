@@ -41,7 +41,7 @@ let package = Package(
     .library(name: "SublimationBonjour", targets: ["SublimationBonjour"])
   ],
   dependencies: [
-    .package(path: "../Sublimation"),
+    .package(url: "https://github.com/brightdigit/Sublimation.git", branch: "remove-logging"),
     .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.26.0")
   ],
   targets: [

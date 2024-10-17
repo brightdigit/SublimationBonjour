@@ -28,7 +28,7 @@
 //
 
 #if canImport(Network)
-  public import Foundation
+  import Foundation
   public import Network
 
   extension NWListener.State: @retroactive CustomDebugStringConvertible {

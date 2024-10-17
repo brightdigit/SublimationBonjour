@@ -1,5 +1,5 @@
 //
-//  NWConnection.swift
+//  LoggerType.swift
 //  SublimationBonjour
 //
 //  Created by Leo Dion.
@@ -27,20 +27,15 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(Network)
-  import Foundation
-  public import Network
+#if canImport(os)
+  public import os
+#elseif canImport(Logging)
+  public import Logging
+#endif
 
-  extension NWConnection.State: @retroactive CustomDebugStringConvertible {
-    @_documentation(visibility: internal) public var debugDescription: String {
-      switch self { case .setup: return "setup" case .waiting(let error):
-        return "waiting: \(error.debugDescription)"
-        case .preparing: return "preparing"
-        case .ready: return "ready"
-        case .failed(let error): return "failed:  \(error.debugDescription)"
-        case .cancelled: return "cancelled"
-        @unknown default: return "unknown state"
-      }
-    }
-  }
+#if canImport(os) || canImport(Logging)
+  public typealias LoggerType = Logger
+#else
+  public typealias LoggerType = any NilLoggerType
+  public protocol NilLoggerType { func debug(_ message: String) }
 #endif
