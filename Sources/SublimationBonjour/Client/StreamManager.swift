@@ -29,12 +29,6 @@
 
 internal import Foundation
 
-#if canImport(os)
-  internal import os
-#elseif canImport(Logging)
-  internal import Logging
-#endif
-
 internal actor StreamManager<Key: Hashable & Sendable, Value: Sendable> {
   private var streamContinuations: [Key: AsyncStream<Value>.Continuation] = [:]
 
@@ -44,7 +38,7 @@ internal actor StreamManager<Key: Hashable & Sendable, Value: Sendable> {
 
   internal init(newID: @escaping @Sendable () -> Key) { self.newID = newID }
 
-  internal func yield(_ urls: [Value], logger: Logger?) {
+  internal func yield(_ urls: [Value], logger: LoggerType?) {
     if streamContinuations.isEmpty { logger?.debug("Missing Continuations.") }
     for streamContinuation in streamContinuations {
       for url in urls { streamContinuation.value.yield(url) }

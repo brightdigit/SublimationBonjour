@@ -27,7 +27,7 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(Network)
+#if canImport(Network) && canImport(Logging)
   public import Network
   public import Sublimation
   public import Logging

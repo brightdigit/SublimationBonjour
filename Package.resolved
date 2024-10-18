@@ -1,22 +1,13 @@
 {
-  "originHash" : "2b9f814946e4952387f6691929b3d5d9a95ddbf99f1704f4beaab390f06560d6",
+  "originHash" : "310cf77e37f4fb0934d2f2d16691a6155cb61148b115825c6dace23cf8e569f5",
   "pins" : [
     {
       "identity" : "sublimation",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/brightdigit/Sublimation",
+      "location" : "https://github.com/brightdigit/Sublimation.git",
       "state" : {
-        "revision" : "99d0da9f907d27deb180582b274c5f83e6732921",
-        "version" : "2.0.0-beta.1"
-      }
-    },
-    {
-      "identity" : "swift-log",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-log.git",
-      "state" : {
-        "revision" : "9cb486020ebf03bfa5b5df985387a14a98744537",
-        "version" : "1.6.1"
+        "revision" : "593020a9e76039b21cb07114b67ae5abb84a7ffa",
+        "version" : "2.0.1"
       }
     },
     {
@@ -24,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-protobuf.git",
       "state" : {
-        "revision" : "e17d61f26df0f0e06f58f6977ba05a097a720106",
-        "version" : "1.27.1"
+        "revision" : "ebc7251dd5b37f627c93698e4374084d98409633",
+        "version" : "1.28.2"
       }
     }
   ],

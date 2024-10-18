@@ -1,5 +1,5 @@
 //
-//  URL.swift
+//  LoggerType.swift
 //  SublimationBonjour
 //
 //  Created by Leo Dion.
@@ -27,15 +27,15 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-internal import Foundation
+#if canImport(os)
+  public import os
+#elseif canImport(Logging)
+  public import Logging
+#endif
 
-extension URL {
-  internal init?(scheme: String, host: String, port: Int) {
-    var components = URLComponents()
-    components.scheme = scheme
-    components.host = host
-    components.port = port
-    guard let url = components.url else { return nil }
-    self = url
-  }
-}
+#if canImport(os) || canImport(Logging)
+  public typealias LoggerType = Logger
+#else
+  public typealias LoggerType = any NilLoggerType
+  public protocol NilLoggerType { func debug(_ message: String) }
+#endif

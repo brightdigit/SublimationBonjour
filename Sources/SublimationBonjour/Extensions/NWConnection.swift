@@ -1,5 +1,5 @@
 //
-//  URL.swift
+//  NWConnection.swift
 //  SublimationBonjour
 //
 //  Created by Leo Dion.
@@ -27,15 +27,20 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-internal import Foundation
+#if canImport(Network)
+  import Foundation
+  public import Network
 
-extension URL {
-  internal init?(scheme: String, host: String, port: Int) {
-    var components = URLComponents()
-    components.scheme = scheme
-    components.host = host
-    components.port = port
-    guard let url = components.url else { return nil }
-    self = url
+  extension NWConnection.State: @retroactive CustomDebugStringConvertible {
+    @_documentation(visibility: internal) public var debugDescription: String {
+      switch self { case .setup: return "setup" case .waiting(let error):
+        return "waiting: \(error.debugDescription)"
+        case .preparing: return "preparing"
+        case .ready: return "ready"
+        case .failed(let error): return "failed:  \(error.debugDescription)"
+        case .cancelled: return "cancelled"
+        @unknown default: return "unknown state"
+      }
+    }
   }
-}
+#endif

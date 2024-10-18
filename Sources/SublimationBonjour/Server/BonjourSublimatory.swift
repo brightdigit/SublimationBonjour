@@ -27,14 +27,13 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(Network)
+#if canImport(Network) && canImport(Logging)
 
   internal import Foundation
 
   public import Network
 
   public import SublimationCore
-
   public import Logging
 
   /// Sublimatory for using Bonjour auto-discovery.
@@ -165,26 +164,25 @@
       let txtRecord = NWTXTRecord(dictionary)
       assert(listener.service == nil)
       listener.service = .init(name: name, type: type, txtRecord: txtRecord)
-
+      let logger = self.logger
       listener.newConnectionHandler = { connection in
         connection.stateUpdateHandler = { state in
           switch state { case .waiting(let error):
 
-            self.logger.warning("Connection Waiting error: \(error)")
+            logger.debug("Connection Waiting error: \(error.localizedDescription)")
 
             case .ready:
-              self.logger.debug("Connection Ready")
-              self.logger.debug("Sending data \(data.count) bytes")
+              logger.debug("Connection Ready")
+              logger.debug("Sending data \(data.count) bytes")
               connection.send(
                 content: data,
                 completion: .contentProcessed { error in
-                  if let error { self.logger.warning("Connection Send error: \(error)") }
+                  if let error { self.logger.error("Connection Send error: \(error)") }
                   connection.cancel()
                 }
               )
-            case .failed(let error): self.logger.error("Connection Failure: \(error)")
-
-            default: self.logger.debug("Connection state updated: \(state)")
+            case .failed(let error): logger.debug("Connection Failure: \(error)")
+            default: logger.debug("Connection state updated: \(state.debugDescription)")
           }
         }
         connection.start(queue: connectionQueue)
@@ -202,7 +200,7 @@
               self.logger.error("Listener Failure: \(error)")
               continuation.resume(throwing: error)
             case .cancelled: continuation.resume()
-            default: self.logger.debug("Listener state updated: \(state)")
+            default: self.logger.debug("Listener state updated: \(state.debugDescription)")
           }
         }
       }
