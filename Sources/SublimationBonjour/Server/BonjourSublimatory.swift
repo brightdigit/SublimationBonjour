@@ -182,7 +182,6 @@
                 }
               )
             case .failed(let error): logger.debug("Connection Failure: \(error)")
-
             default: logger.debug("Connection state updated: \(state.debugDescription)")
           }
         }

@@ -1,13 +1,13 @@
 {
-  "originHash" : "eb6d44461edfa318c7714318cbf366fdaa85477ce7d75eb7670439f78984597b",
+  "originHash" : "310cf77e37f4fb0934d2f2d16691a6155cb61148b115825c6dace23cf8e569f5",
   "pins" : [
     {
       "identity" : "sublimation",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/brightdigit/Sublimation.git",
       "state" : {
-        "branch" : "remove-logging",
-        "revision" : "e0cc324217645e3182bfce341d77520d7ea0e468"
+        "revision" : "593020a9e76039b21cb07114b67ae5abb84a7ffa",
+        "version" : "2.0.1"
       }
     },
     {
