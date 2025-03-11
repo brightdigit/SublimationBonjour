@@ -1,6 +1,6 @@
 //
 //  BindingConfiguration+URL.swift
-//  SublimationBonjour
+//  SimulatorServices
 //
 //  Created by Leo Dion.
 //  Copyright © 2025 BrightDigit.
@@ -27,23 +27,18 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(Network)
+internal import Foundation
 
-  internal import Foundation
-
-  internal import Network
-
-  extension BindingConfiguration {
-    internal func urls(defaults: URLDefaultConfiguration) -> [URL] {
-      let isSecure = self.hasIsSecure ? self.isSecure : defaults.isSecure
-      let port = self.hasPort ? Int(self.port) : defaults.port
-      return self.hosts.compactMap { host in
-        if host.isLocalhost() { return nil }
-        if host.isValidIPv6Address() { return nil }
-        let url = URL(scheme: isSecure ? "https" : "http", host: host, port: port)
-        assert(url != nil)
-        return url
-      }
+extension BindingConfiguration {
+  internal func urls(defaults: URLDefaultConfiguration) -> [URL] {
+    let isSecure = self.hasIsSecure ? self.isSecure : defaults.isSecure
+    let port = self.hasPort ? Int(self.port) : defaults.port
+    return self.hosts.compactMap { host in
+      if host.isLocalhost() { return nil }
+      if host.isValidIPv6Address() { return nil }
+      let url = URL(scheme: isSecure ? "https" : "http", host: host, port: port)
+      assert(url != nil)
+      return url
     }
   }
-#endif
+}

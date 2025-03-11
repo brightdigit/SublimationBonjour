@@ -1,6 +1,6 @@
 //
 //  StreamManager.swift
-//  SublimationBonjour
+//  SimulatorServices
 //
 //  Created by Leo Dion.
 //  Copyright © 2025 BrightDigit.

@@ -1,6 +1,6 @@
 //
 //  Sublimation+Bonjour.swift
-//  SublimationBonjour
+//  SimulatorServices
 //
 //  Created by Leo Dion.
 //  Copyright © 2025 BrightDigit.
@@ -28,18 +28,18 @@
 //
 
 #if canImport(Network) && canImport(Logging)
+  public import Logging
   public import Network
   public import Sublimation
-  public import Logging
 
   /// Friendly extensions for setting up a `Sublimation` object for `Bonjour`
   extension Sublimation {
     /// Initializes a `Sublimation` instance with the provided parameters.
     ///
     /// - Parameters:
-    ///   - bindingConfiguration: A configuration with addresses, port and tls configuration.
+    ///   - bindingConfiguration: A ``BindingConfiguration``
     ///   - logger: A logger.
-    ///   - listenerParameters: The network parameters to use for the listener. Default is `.tcp`.
+    ///   - listenerParameters: The network parameters to use for the listener.
     ///   - name: Service name.
     ///   - type: Service type.
     ///   - listenerQueue: DispatchQueue for the listener.
@@ -68,7 +68,7 @@
     /// Initializes a `Sublimation` instance with the provided parameters.
     /// Uses a `NWListener` to broadcast the server information.
     /// - Parameters:
-    ///   - bindingConfiguration: A configuration with addresses, port and tls configuration.
+    ///   - bindingConfiguration: A ``BindingConfiguration``
     ///   - logger: A logger.
     ///   - listener: The `NWListener` to use.
     ///   - name: Service name.

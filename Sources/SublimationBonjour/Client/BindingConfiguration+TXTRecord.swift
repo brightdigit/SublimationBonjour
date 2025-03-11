@@ -1,6 +1,6 @@
 //
 //  BindingConfiguration+TXTRecord.swift
-//  SublimationBonjour
+//  SimulatorServices
 //
 //  Created by Leo Dion.
 //  Copyright © 2025 BrightDigit.
@@ -58,14 +58,19 @@ extension BindingConfiguration {
         try Self.txtRecordIndexValueFrom(key: key, value: value)
       }
       .sorted { $0.0 < $1.0 }
-    if let failure = pairs.map(\.0).isNotConsecutive { throw TXTRecordError.indexMismatch(failure) }
+    if let failure = pairs.map(\.0).isNotConsecutive {
+      throw TXTRecordError.indexMismatch(failure)
+    }
     let values = pairs.map(\.1)
     guard let data: Data = .init(base64Encoded: values.joined()) else {
       throw TXTRecordError.base64Decoding
     }
-    try self.init(serializedData: data)
+    try self.init(serializedBytes: data)
   }
-  static func txtRecordIndexValueFrom(key: String, value: String) throws -> (Int, String) {
+  static func txtRecordIndexValueFrom(
+    key: String,
+    value: String
+  ) throws -> (Int, String) {
     let components = key.components(separatedBy: "_")
     guard components.count == 2, components.first == "Sublimation",
       let indexString = components.last

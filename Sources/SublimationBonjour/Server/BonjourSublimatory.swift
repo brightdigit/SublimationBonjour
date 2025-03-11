@@ -1,6 +1,6 @@
 //
 //  BonjourSublimatory.swift
-//  SublimationBonjour
+//  SimulatorServices
 //
 //  Created by Leo Dion.
 //  Copyright © 2025 BrightDigit.
@@ -27,87 +27,31 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(Network) && canImport(Logging)
+#if canImport(Network)
 
   internal import Foundation
 
   public import Network
 
-  public import SublimationCore
   public import Logging
+  public import SublimationCore
 
   /// Sublimatory for using Bonjour auto-discovery.
-  public struct BonjourSublimatory: Sublimatory {
-    /// Uses a `NWListener` to broadcast the server information.
-    /// - Parameters:
-    ///   - bindingConfiguration: A configuration with addresses, port and tls configuration.
-    ///   - logger: A logger.
-    ///   - listener: The `NWListener` to use.
-    ///   - name: Service name.
-    ///   - type: Service type.
-    ///   - listenerQueue: DispatchQueue for the listener.
-    ///   - connectionQueue: DispatchQueue for each new connection made.
-    public init(
-      bindingConfiguration: BindingConfiguration,
-      logger: Logger,
-      listener: NWListener,
-      name: String = Self.defaultName,
-      type: String = Self.defaultHttpTCPServiceType,
-      listenerQueue: DispatchQueue = .global(),
-      connectionQueue: DispatchQueue = .global()
-    ) {
-      self.bindingConfiguration = bindingConfiguration
-      self.logger = logger
-      self.listener = listener
-      self.name = name
-      self.type = type
-      self.listenerQueue = listenerQueue
-      self.connectionQueue = connectionQueue
-    }
-
-    /// Creates a `NWListener` to broadcast the server information.
-    /// - Parameters:
-    ///   - bindingConfiguration: A configuration with addresses, port and tls configuration.
-    ///   - logger: A logger.
-    ///   - listenerParameters: The network parameters to use for the listener. Default is `.tcp`.
-    ///   - name: Service name.
-    ///   - type: Service type.
-    ///   - listenerQueue: DispatchQueue for the listener.
-    ///   - connectionQueue: DispatchQueue for each new connection made.
-    /// - Throws: an error if the parameters are not compatible with the provided port.
-    public init(
-      bindingConfiguration: BindingConfiguration,
-      logger: Logger,
-      listenerParameters: NWParameters = Self.defaultParameters,
-      name: String = Self.defaultName,
-      type: String = Self.defaultHttpTCPServiceType,
-      listenerQueue: DispatchQueue = .global(),
-      connectionQueue: DispatchQueue = .global()
-    ) throws {
-      let listener = try NWListener(using: listenerParameters)
-      self.init(
-        bindingConfiguration: bindingConfiguration,
-        logger: logger,
-        listener: listener,
-        name: name,
-        type: type,
-        listenerQueue: listenerQueue,
-        connectionQueue: connectionQueue
-      )
-    }
-    let bindingConfiguration: BindingConfiguration
-    let logger: Logger
-    let listener: NWListener
-    let name: String
-    let type: String
-    let listenerQueue: DispatchQueue
-    let connectionQueue: DispatchQueue
+  public struct BonjourSublimatory: Sublimatory, NWListenerServiceDescriptor {
     /// Default name for the listener service which is "Sublimation"
     public static let defaultName = "Sublimation"
     /// Default service type which is "_sublimation._tcp".
     public static let defaultHttpTCPServiceType = "_sublimation._tcp"
     /// Default parameters for the listener which is `NWParameters.tcp`
     public static let defaultParameters: NWParameters = .tcp
+
+    private let bindingConfiguration: BindingConfiguration
+    internal let logger: Logger
+    internal let listener: NWListener
+    internal let name: String
+    internal let type: String
+    internal let listenerQueue: DispatchQueue
+    internal let connectionQueue: DispatchQueue
 
     //    @available(*, unavailable, message: "Temporary Code for pulling ipaddresses.")
     //    static func getAllIPAddresses() -> [String: [String]] {
@@ -150,60 +94,73 @@
     //      return addresses
     //    }
 
+    /// Uses a `NWListener` to broadcast the server information.
+    /// - Parameters:
+    ///   - bindingConfiguration: A ``BindingConfiguration``
+    ///   - logger: A logger.
+    ///   - listener: The `NWListener` to use.
+    ///   - name: Service name.
+    ///   - type: Service type.
+    ///   - listenerQueue: DispatchQueue for the listener.
+    ///   - connectionQueue: DispatchQueue for each new connection made.
+    public init(
+      bindingConfiguration: BindingConfiguration,
+      logger: Logger,
+      listener: NWListener,
+      name: String = Self.defaultName,
+      type: String = Self.defaultHttpTCPServiceType,
+      listenerQueue: DispatchQueue = .global(),
+      connectionQueue: DispatchQueue = .global()
+    ) {
+      self.bindingConfiguration = bindingConfiguration
+      self.logger = logger
+      self.listener = listener
+      self.name = name
+      self.type = type
+      self.listenerQueue = listenerQueue
+      self.connectionQueue = connectionQueue
+    }
+
+    /// Creates a `NWListener` to broadcast the server information.
+    /// - Parameters:
+    ///   - bindingConfiguration: A ``BindingConfiguration``
+    ///   - logger: A logger.
+    ///   - listenerParameters: The network parameters to use for the listener.
+    ///   - name: Service name.
+    ///   - type: Service type.
+    ///   - listenerQueue: DispatchQueue for the listener.
+    ///   - connectionQueue: DispatchQueue for each new connection made.
+    /// - Throws: an error if the parameters are not compatible with the provided port.
+    public init(
+      bindingConfiguration: BindingConfiguration,
+      logger: Logger,
+      listenerParameters: NWParameters = Self.defaultParameters,
+      name: String = Self.defaultName,
+      type: String = Self.defaultHttpTCPServiceType,
+      listenerQueue: DispatchQueue = .global(),
+      connectionQueue: DispatchQueue = .global()
+    ) throws {
+      let listener = try NWListener(using: listenerParameters)
+      self.init(
+        bindingConfiguration: bindingConfiguration,
+        logger: logger,
+        listener: listener,
+        name: name,
+        type: type,
+        listenerQueue: listenerQueue,
+        connectionQueue: connectionQueue
+      )
+    }
+
     /// Shutdown any active services by cancelling the listener.
     public func shutdown() { listener.cancel() }
     /// Runs the Sublimatory service.
-    /// -  Note: This method contains long running work, returning from it is seen as a failure.
+    /// -  Note: This method contains long running work,
+    /// returning from it is seen as a failure.
     public func run() async throws {
-      let data = try self.bindingConfiguration.serializedData()
-      let txtRecordValues = data.base64EncodedString().splitByMaxLength(199)
-      let dictionary = txtRecordValues.enumerated()
-        .reduce(into: [String: String]()) { result, value in
-          result["Sublimation_\(value.offset)"] = String(value.element)
-        }
-      let txtRecord = NWTXTRecord(dictionary)
-      assert(listener.service == nil)
-      listener.service = .init(name: name, type: type, txtRecord: txtRecord)
-      let logger = self.logger
-      listener.newConnectionHandler = { connection in
-        connection.stateUpdateHandler = { state in
-          switch state { case .waiting(let error):
-
-            logger.debug("Connection Waiting error: \(error.localizedDescription)")
-
-            case .ready:
-              logger.debug("Connection Ready")
-              logger.debug("Sending data \(data.count) bytes")
-              connection.send(
-                content: data,
-                completion: .contentProcessed { error in
-                  if let error { self.logger.error("Connection Send error: \(error)") }
-                  connection.cancel()
-                }
-              )
-            case .failed(let error): logger.debug("Connection Failure: \(error)")
-            default: logger.debug("Connection state updated: \(state.debugDescription)")
-          }
-        }
-        connection.start(queue: connectionQueue)
-      }
-
-      listener.start(queue: listenerQueue)
-
-      return try await withCheckedThrowingContinuation { continuation in
-        listener.stateUpdateHandler = { state in
-          switch state { case .waiting(let error):
-            self.logger.warning("Listener Waiting error: \(error)")
-            continuation.resume(throwing: error)
-
-            case .failed(let error):
-              self.logger.error("Listener Failure: \(error)")
-              continuation.resume(throwing: error)
-            case .cancelled: continuation.resume()
-            default: self.logger.debug("Listener state updated: \(state.debugDescription)")
-          }
-        }
-      }
+      let data = try bindingConfiguration.serializedData()
+      let txtRecord = NWTXTRecord(data: data)
+      return try await listener.run(self, txtRecord: txtRecord, onConnectionSend: data)
     }
   }
 #endif

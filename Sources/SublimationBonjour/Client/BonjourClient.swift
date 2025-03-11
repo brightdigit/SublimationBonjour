@@ -1,6 +1,6 @@
 //
 //  BonjourClient.swift
-//  SublimationBonjour
+//  SimulatorServices
 //
 //  Created by Leo Dion.
 //  Copyright © 2025 BrightDigit.
@@ -39,13 +39,13 @@
 
   /// Client for fetching the url of the host server.
   ///
-  /// On the device, create a ``BonjourClient`` and either get an `AsyncStream` of `URL` objects or just ask for the first one:
+  /// On the device, create a ``BonjourClient`` and
+  /// either get an `AsyncStream` of `URL` objects or just ask for the first one:
   /// ```
   /// let depositor = BonjourClient(logger: app.logger)
   /// let hostURL = await depositor.first()
   /// ```
   public actor BonjourClient {
-
     private let browser: NWBrowser
     private let streams = StreamManager<UUID, URL>()
     private let logger: LoggerType?
@@ -72,7 +72,7 @@
       }
     }
 
-    /// Creates a BonjourClient for fetching the host urls availab.e
+    /// Creates a BonjourClient for fetching the host urls available.
     /// - Parameters:
     ///   - logger: Logger
     ///   - defaultURLConfiguration: default ``URL`` configuration for missing properties.
@@ -91,9 +91,15 @@
       browser.browseResultsChangedHandler = { results, _ in self.parseResults(results) }
     }
 
-    private func append(urls: [URL]) async { await self.streams.yield(urls, logger: self.logger) }
+    private func append(urls: [URL]) async {
+      await self.streams.yield(urls, logger: self.logger)
+    }
 
-    private nonisolated func append(urls: [URL]) { Task { await self.append(urls: urls) } }
+    private nonisolated func append(urls: [URL]) {
+      Task {
+        await self.append(urls: urls)
+      }
+    }
 
     private nonisolated func parseResults(_ results: Set<NWBrowser.Result>) {
       Task { await self.addResults(results) }
@@ -107,10 +113,12 @@
         }
         let dictionary = txtRecord.dictionary
         let configuration: BindingConfiguration
-        do { configuration = try BindingConfiguration(txtRecordDictionary: dictionary) }
-        catch {
-          self.logger?
-            .error("Failed to parse TXT Record for \(result.endpoint.debugDescription): \(error)")
+        do {
+          configuration = try BindingConfiguration(txtRecordDictionary: dictionary)
+        } catch {
+          self.logger?.error(
+            "Failed to parse TXT Record for \(result.endpoint.debugDescription): \(error)"
+          )
           continue
         }
         let urls = configuration.urls(defaults: self.defaultURLConfiguration)

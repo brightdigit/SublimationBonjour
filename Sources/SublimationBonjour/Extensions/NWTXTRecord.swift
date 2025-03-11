@@ -1,5 +1,5 @@
 //
-//  String.swift
+//  NWTXTRecord.swift
 //  SimulatorServices
 //
 //  Created by Leo Dion.
@@ -27,38 +27,22 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-internal import Foundation
+#if canImport(Network)
+  import Foundation
+  import Network
 
-extension String {
-  internal func isLocalhost() -> Bool {
-    let localhostNames = ["localhost", "127.0.0.1", "::1"]
-    return localhostNames.contains(self)
-  }
-
-  internal func isValidIPv6Address() -> Bool {
-    var sin6 = sockaddr_in6()
-    return self.withCString {
-      cstring in
-      inet_pton(AF_INET6, cstring, &sin6.sin6_addr)
-    } == 1
-  }
-
-  func splitByMaxLength(_ maxLength: Int) -> [String] {
-    var result: [String] = []
-    var currentIndex = self.startIndex
-
-    while currentIndex < self.endIndex {
-      let endIndex =
-        self.index(
-          currentIndex,
-          offsetBy: maxLength,
-          limitedBy: self.endIndex
-        ) ?? self.endIndex
-      let substring = String(self[currentIndex..<endIndex])
-      result.append(substring)
-      currentIndex = endIndex
+  extension NWTXTRecord {
+    internal init(
+      data: Data,
+      maxLength: Int = 199,
+      keyPrefix: String = "Sublimation_"
+    ) {
+      let txtRecordValues = data.base64EncodedString().splitByMaxLength(199)
+      let dictionary = txtRecordValues.enumerated()
+        .reduce(into: [String: String]()) { result, value in
+          result["\(keyPrefix)\(value.offset)"] = String(value.element)
+        }
+      self.init(dictionary)
     }
-
-    return result
   }
-}
+#endif

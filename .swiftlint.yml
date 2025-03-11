@@ -89,7 +89,7 @@ opt_in_rules:
   - yoda_condition
 disabled_rules:
   - trailing_comma
-
+  - strict_fileprivate
 cyclomatic_complexity:
   - 6
   - 8
@@ -112,8 +112,8 @@ identifier_name:
 excluded:
   - DerivedData
   - .build
-  - Sources/SimulatorServices/Components/DeviceTypeID.swift
   - .swiftpm
   - Mint
+  - Sources/SublimationBonjour/Server/BindingConfiguration+Protobuf.swift
 indentation_width:
   indentation_width: 2

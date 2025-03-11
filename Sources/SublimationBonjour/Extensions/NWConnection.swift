@@ -1,6 +1,6 @@
 //
 //  NWConnection.swift
-//  SublimationBonjour
+//  SimulatorServices
 //
 //  Created by Leo Dion.
 //  Copyright © 2025 BrightDigit.
@@ -33,13 +33,16 @@
 
   extension NWConnection.State: @retroactive CustomDebugStringConvertible {
     @_documentation(visibility: internal) public var debugDescription: String {
-      switch self { case .setup: return "setup" case .waiting(let error):
+      switch self {
+      case .setup: return "setup"
+
+      case .waiting(let error):
         return "waiting: \(error.debugDescription)"
-        case .preparing: return "preparing"
-        case .ready: return "ready"
-        case .failed(let error): return "failed:  \(error.debugDescription)"
-        case .cancelled: return "cancelled"
-        @unknown default: return "unknown state"
+      case .preparing: return "preparing"
+      case .ready: return "ready"
+      case .failed(let error): return "failed:  \(error.debugDescription)"
+      case .cancelled: return "cancelled"
+      @unknown default: return "unknown state"
       }
     }
   }

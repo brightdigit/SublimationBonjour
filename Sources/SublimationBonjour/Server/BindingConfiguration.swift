@@ -1,6 +1,6 @@
 //
 //  BindingConfiguration.swift
-//  SublimationBonjour
+//  SimulatorServices
 //
 //  Created by Leo Dion.
 //  Copyright © 2025 BrightDigit.
@@ -48,7 +48,7 @@ extension BindingConfiguration {
   ///   - port: The port number of the server.
   ///   - isSecure: Whether to use https or http.
   ///
-  public init(hosts: [String], port: Int = 8080, isSecure: Bool = false) {
+  public init(hosts: [String], port: Int = 8_080, isSecure: Bool = false) {
     self.init()
     self.hosts = hosts
     self.isSecure = isSecure
