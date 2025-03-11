@@ -35,7 +35,9 @@ extension URL {
     components.scheme = scheme
     components.host = host
     components.port = port
-    guard let url = components.url else { return nil }
+    guard let url = components.url else {
+      return nil
+    }
     self = url
   }
 }

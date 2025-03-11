@@ -1,5 +1,5 @@
 //
-//  LoggerType.swift
+//  NWListenerServiceDescriptor.swift
 //  SimulatorServices
 //
 //  Created by Leo Dion.
@@ -27,18 +27,11 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(os)
-  public import os
-#elseif canImport(Logging)
-  public import Logging
-#endif
-
-#if canImport(os) || canImport(Logging)
-  @_documentation(visibility: internal)
-  public typealias LoggerType = Logger
-#else
-  @_documentation(visibility: internal)
-  public typealias LoggerType = any NilLoggerType
-  @_documentation(visibility: internal)
-  public protocol NilLoggerType { func debug(_ message: String) }
-#endif
+internal protocol NWListenerServiceDescriptor: Sendable {
+  var logger: Logger { get }
+  var listener: NWListener { get }
+  var name: String { get }
+  var type: String { get }
+  var listenerQueue: DispatchQueue { get }
+  var connectionQueue: DispatchQueue { get }
+}

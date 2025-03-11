@@ -29,10 +29,48 @@
 
 #if canImport(Network)
   import Foundation
+  import Logging
   public import Network
 
+  extension NWConnection {
+    internal func start(
+      on queue: DispatchQueue,
+      sendingData data: Data,
+      loggingTo logger: Logger
+    ) {
+      self.stateUpdateHandler = { state in
+        self.onConnectionState(state, sendingData: data, loggingTo: logger)
+      }
+      self.start(queue: queue)
+    }
+
+    private func onConnectionState(
+      _ state: NWConnection.State, sendingData data: Data, loggingTo logger: Logger
+    ) {
+      switch state {
+      case .waiting(let error):
+
+        logger.debug("Connection Waiting error: \(error.localizedDescription)")
+
+      case .ready:
+        logger.debug("Connection Ready")
+        logger.debug("Sending data \(data.count) bytes")
+        self.send(
+          content: data,
+          completion: .contentProcessed { error in
+            if let error { logger.error("Connection Send error: \(error)") }
+            self.cancel()
+          }
+        )
+      case .failed(let error): logger.debug("Connection Failure: \(error)")
+      default: logger.debug("Connection state updated: \(state.debugDescription)")
+      }
+    }
+  }
+
   extension NWConnection.State: @retroactive CustomDebugStringConvertible {
-    @_documentation(visibility: internal) public var debugDescription: String {
+    @_documentation(visibility: internal)
+    public var debugDescription: String {
       switch self {
       case .setup: return "setup"
 

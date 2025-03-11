@@ -28,10 +28,18 @@
 //
 
 extension BindingConfiguration {
+  // swiftlint:disable function_default_parameter_at_end discouraged_optional_boolean
+
+  /// Creates the Information to advertise how to access the current server.
+  /// - Parameters:
+  ///   - isSecure: Whether https or http.
+  ///   - port: Port number.
+  ///   - hosts: Lists of possible host names.
   public init(isSecure: Bool? = nil, port: Int? = nil, hosts: [String]) {
     self.init()
     self.isSecure = isSecure ?? false
     self.port = port.map(UInt32.init) ?? 8_080
     self.hosts = hosts
   }
+  // swiftlint:enable function_default_parameter_at_end discouraged_optional_boolean
 }

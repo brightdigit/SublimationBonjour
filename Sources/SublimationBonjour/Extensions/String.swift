@@ -37,13 +37,12 @@ extension String {
 
   internal func isValidIPv6Address() -> Bool {
     var sin6 = sockaddr_in6()
-    return self.withCString {
-      cstring in
+    return self.withCString { cstring in
       inet_pton(AF_INET6, cstring, &sin6.sin6_addr)
     } == 1
   }
 
-  func splitByMaxLength(_ maxLength: Int) -> [String] {
+  internal func splitByMaxLength(_ maxLength: Int) -> [String] {
     var result: [String] = []
     var currentIndex = self.startIndex
 

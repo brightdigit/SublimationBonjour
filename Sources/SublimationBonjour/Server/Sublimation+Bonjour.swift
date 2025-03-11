@@ -66,6 +66,7 @@
       self.init(sublimatory: sublimatory)
     }
     /// Initializes a `Sublimation` instance with the provided parameters.
+    ///
     /// Uses a `NWListener` to broadcast the server information.
     /// - Parameters:
     ///   - bindingConfiguration: A ``BindingConfiguration``

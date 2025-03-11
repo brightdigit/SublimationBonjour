@@ -1,5 +1,6 @@
 // swift-tools-version: 6.0
 
+// swiftlint:disable explicit_acl explicit_top_level_acl
 import PackageDescription
 
 let swiftSettings: [SwiftSetting] = [
@@ -60,3 +61,4 @@ let package = Package(
     )
   ]
 )
+// swiftlint:enable explicit_acl explicit_top_level_acl

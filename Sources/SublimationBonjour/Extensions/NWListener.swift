@@ -32,17 +32,8 @@
   import Logging
   public import Network
 
-  protocol NWListenerServiceDescriptor: Sendable {
-    var logger: Logger { get }
-    var listener: NWListener { get }
-    var name: String { get }
-    var type: String { get }
-    var listenerQueue: DispatchQueue { get }
-    var connectionQueue: DispatchQueue { get }
-  }
-
   extension NWListener {
-    func run(
+    internal func run(
       _ descriptor: NWListenerServiceDescriptor,
       txtRecord: NWTXTRecord,
       onConnectionSend data: Data
@@ -52,7 +43,9 @@
     }
 
     private func run(logger: Logger) async throws {
-      try await withCheckedThrowingContinuation { continuation in
+      try await withCheckedThrowingContinuation {
+        // swiftlint:disable:next closure_parameter_position
+        (continuation: CheckedContinuation<Void, any Error>) in
         self.stateUpdateHandler = { state in
           switch state {
           case .waiting(let error):
@@ -68,6 +61,7 @@
         }
       }
     }
+
     private func startWith(
       _ descriptor: NWListenerServiceDescriptor,
       txtRecord: NWTXTRecord,
@@ -81,34 +75,19 @@
       )
       let logger = descriptor.logger
       self.newConnectionHandler = { connection in
-        connection.stateUpdateHandler = { state in
-          switch state {
-          case .waiting(let error):
-
-            logger.debug("Connection Waiting error: \(error.localizedDescription)")
-
-          case .ready:
-            logger.debug("Connection Ready")
-            logger.debug("Sending data \(data.count) bytes")
-            connection.send(
-              content: data,
-              completion: .contentProcessed { error in
-                if let error { logger.error("Connection Send error: \(error)") }
-                connection.cancel()
-              }
-            )
-          case .failed(let error): logger.debug("Connection Failure: \(error)")
-          default: logger.debug("Connection state updated: \(state.debugDescription)")
-          }
-        }
-        connection.start(queue: descriptor.connectionQueue)
+        connection.start(
+          on: descriptor.connectionQueue,
+          sendingData: data,
+          loggingTo: logger
+        )
       }
 
       self.start(queue: descriptor.listenerQueue)
     }
   }
   extension NWListener.State: @retroactive CustomDebugStringConvertible {
-    @_documentation(visibility: internal) public var debugDescription: String {
+    @_documentation(visibility: internal)
+    public var debugDescription: String {
       switch self {
       case .setup: "setup"
 

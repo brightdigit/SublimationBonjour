@@ -35,7 +35,9 @@ extension Array where Element == Int {
     case nonConsecutive(expectedSum: Int, actualSum: Int)
   }
   fileprivate var isNotConsecutive: ConsecutiveFailure? {
-    guard !isEmpty else { return ConsecutiveFailure.emptyArray }
+    guard !isEmpty else {
+      return ConsecutiveFailure.emptyArray
+    }
     let expectedSum = (count * (count - 1)) / 2
     let actualSum = reduce(0, +)
     guard actualSum == expectedSum else {
@@ -67,7 +69,7 @@ extension BindingConfiguration {
     }
     try self.init(serializedBytes: data)
   }
-  static func txtRecordIndexValueFrom(
+  private static func txtRecordIndexValueFrom(
     key: String,
     value: String
   ) throws -> (Int, String) {

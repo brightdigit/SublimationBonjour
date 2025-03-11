@@ -29,7 +29,7 @@
 
 import XCTest
 
-final class SublimationBonjourTests: XCTestCase {
-  func testExample() throws {
+internal final class SublimationBonjourTests: XCTestCase {
+  internal func testExample() throws {
   }
 }

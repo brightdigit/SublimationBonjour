@@ -37,7 +37,7 @@ public struct URLDefaultConfiguration: Sendable {
   public let isSecure: Bool
   /// Server port number.
   public let port: Int
-  
+
   /// Create the default configuration.
   /// - Parameters:
   ///   - isSecure: Whether https or http

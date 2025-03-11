@@ -34,8 +34,12 @@ extension BindingConfiguration {
     let isSecure = self.hasIsSecure ? self.isSecure : defaults.isSecure
     let port = self.hasPort ? Int(self.port) : defaults.port
     return self.hosts.compactMap { host in
-      if host.isLocalhost() { return nil }
-      if host.isValidIPv6Address() { return nil }
+      if host.isLocalhost() {
+        return nil
+      }
+      if host.isValidIPv6Address() {
+        return nil
+      }
       let url = URL(scheme: isSecure ? "https" : "http", host: host, port: port)
       assert(url != nil)
       return url
