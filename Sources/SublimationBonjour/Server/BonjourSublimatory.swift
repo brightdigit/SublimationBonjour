@@ -30,10 +30,8 @@
 #if canImport(Network)
 
   internal import Foundation
-
-  public import Network
-
   public import Logging
+  public import Network
   public import SublimationCore
 
   /// Sublimatory for using Bonjour auto-discovery.

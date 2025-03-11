@@ -27,11 +27,17 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-internal protocol NWListenerServiceDescriptor: Sendable {
-  var logger: Logger { get }
-  var listener: NWListener { get }
-  var name: String { get }
-  var type: String { get }
-  var listenerQueue: DispatchQueue { get }
-  var connectionQueue: DispatchQueue { get }
-}
+#if canImport(Network)
+  import Foundation
+  import Logging
+  import Network
+
+  internal protocol NWListenerServiceDescriptor: Sendable {
+    var logger: Logger { get }
+    var listener: NWListener { get }
+    var name: String { get }
+    var type: String { get }
+    var listenerQueue: DispatchQueue { get }
+    var connectionQueue: DispatchQueue { get }
+  }
+#endif

@@ -85,7 +85,9 @@
       self.start(queue: descriptor.listenerQueue)
     }
   }
+
   extension NWListener.State: @retroactive CustomDebugStringConvertible {
+    // swift-format-ignore
     @_documentation(visibility: internal)
     public var debugDescription: String {
       switch self {

@@ -33,12 +33,15 @@
   public import Logging
 #endif
 
+// swift-format-ignore-file
+// swiftlint:disable missing_docs file_types_order
 #if canImport(os) || canImport(Logging)
   @_documentation(visibility: internal)
   public typealias LoggerType = Logger
 #else
   @_documentation(visibility: internal)
-  public typealias LoggerType = any NilLoggerType
-  @_documentation(visibility: internal)
   public protocol NilLoggerType { func debug(_ message: String) }
+  @_documentation(visibility: internal)
+  public typealias LoggerType = any NilLoggerType
 #endif
+// swiftlint:enable missing_docs file_types_order
