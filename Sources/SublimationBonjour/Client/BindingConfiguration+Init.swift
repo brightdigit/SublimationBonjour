@@ -1,5 +1,5 @@
 //
-//  NWListener.swift
+//  BindingConfiguration+Init.swift
 //  SublimationBonjour
 //
 //  Created by Leo Dion.
@@ -27,19 +27,11 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(Network)
-  import Foundation
-  public import Network
-
-  extension NWListener.State: @retroactive CustomDebugStringConvertible {
-    @_documentation(visibility: internal) public var debugDescription: String {
-      switch self { case .setup: "setup" case .waiting(let error):
-        "waiting: \(error.debugDescription)"
-        case .ready: "ready"
-        case .failed(let error): "failed: \(error.debugDescription)"
-        case .cancelled: "cancelled"
-        @unknown default: "unknown state"
-      }
-    }
+extension BindingConfiguration {
+  public init(isSecure: Bool? = nil, port: Int? = nil, hosts: [String]) {
+    self.init()
+    self.isSecure = isSecure ?? false
+    self.port = port.map(UInt32.init) ?? 8_080
+    self.hosts = hosts
   }
-#endif
+}
