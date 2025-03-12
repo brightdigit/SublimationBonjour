@@ -3,7 +3,7 @@
 //  SublimationBonjour
 //
 //  Created by Leo Dion.
-//  Copyright © 2024 BrightDigit.
+//  Copyright © 2025 BrightDigit.
 //
 //  Permission is hereby granted, free of charge, to any person
 //  obtaining a copy of this software and associated documentation
@@ -35,7 +35,9 @@ extension Array where Element == Int {
     case nonConsecutive(expectedSum: Int, actualSum: Int)
   }
   fileprivate var isNotConsecutive: ConsecutiveFailure? {
-    guard !isEmpty else { return ConsecutiveFailure.emptyArray }
+    guard !isEmpty else {
+      return ConsecutiveFailure.emptyArray
+    }
     let expectedSum = (count * (count - 1)) / 2
     let actualSum = reduce(0, +)
     guard actualSum == expectedSum else {
@@ -58,14 +60,19 @@ extension BindingConfiguration {
         try Self.txtRecordIndexValueFrom(key: key, value: value)
       }
       .sorted { $0.0 < $1.0 }
-    if let failure = pairs.map(\.0).isNotConsecutive { throw TXTRecordError.indexMismatch(failure) }
+    if let failure = pairs.map(\.0).isNotConsecutive {
+      throw TXTRecordError.indexMismatch(failure)
+    }
     let values = pairs.map(\.1)
     guard let data: Data = .init(base64Encoded: values.joined()) else {
       throw TXTRecordError.base64Decoding
     }
-    try self.init(serializedData: data)
+    try self.init(serializedBytes: data)
   }
-  static func txtRecordIndexValueFrom(key: String, value: String) throws -> (Int, String) {
+  private static func txtRecordIndexValueFrom(
+    key: String,
+    value: String
+  ) throws -> (Int, String) {
     let components = key.components(separatedBy: "_")
     guard components.count == 2, components.first == "Sublimation",
       let indexString = components.last

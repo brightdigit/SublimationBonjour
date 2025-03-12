@@ -3,7 +3,7 @@
 //  SublimationBonjour
 //
 //  Created by Leo Dion.
-//  Copyright © 2024 BrightDigit.
+//  Copyright © 2025 BrightDigit.
 //
 //  Permission is hereby granted, free of charge, to any person
 //  obtaining a copy of this software and associated documentation
@@ -37,16 +37,22 @@ extension String {
 
   internal func isValidIPv6Address() -> Bool {
     var sin6 = sockaddr_in6()
-    return self.withCString { cstring in inet_pton(AF_INET6, cstring, &sin6.sin6_addr) } == 1
+    return self.withCString { cstring in
+      inet_pton(AF_INET6, cstring, &sin6.sin6_addr)
+    } == 1
   }
 
-  func splitByMaxLength(_ maxLength: Int) -> [String] {
+  internal func splitByMaxLength(_ maxLength: Int) -> [String] {
     var result: [String] = []
     var currentIndex = self.startIndex
 
     while currentIndex < self.endIndex {
       let endIndex =
-        self.index(currentIndex, offsetBy: maxLength, limitedBy: self.endIndex) ?? self.endIndex
+        self.index(
+          currentIndex,
+          offsetBy: maxLength,
+          limitedBy: self.endIndex
+        ) ?? self.endIndex
       let substring = String(self[currentIndex..<endIndex])
       result.append(substring)
       currentIndex = endIndex

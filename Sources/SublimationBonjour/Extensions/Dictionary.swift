@@ -3,7 +3,7 @@
 //  SublimationBonjour
 //
 //  Created by Leo Dion.
-//  Copyright © 2024 BrightDigit.
+//  Copyright © 2025 BrightDigit.
 //
 //  Permission is hereby granted, free of charge, to any person
 //  obtaining a copy of this software and associated documentation
@@ -36,7 +36,10 @@ extension Dictionary where Key == String, Value == String {
     separator: String = "_",
     keyPrefix: String? = nil
   ) {
-    let txtRecordValues = txtRecordData.base64EncodedString().splitByMaxLength(maximumValueSize)
+    let txtRecordValues =
+      txtRecordData
+      .base64EncodedString()
+      .splitByMaxLength(maximumValueSize)
     self = txtRecordValues.enumerated()
       .reduce(into: [String: String]()) { result, value in
         let key = [keyPrefix, value.offset.description].compactMap { $0 }

@@ -1,16 +1,15 @@
 // swift-tools-version: 6.0
 
+// swiftlint:disable explicit_acl explicit_top_level_acl
 import PackageDescription
 
 let swiftSettings: [SwiftSetting] = [
   SwiftSetting.enableExperimentalFeature("AccessLevelOnImport"),
   SwiftSetting.enableExperimentalFeature("BitwiseCopyable"),
-  SwiftSetting.enableExperimentalFeature("GlobalActorIsolatedTypesUsability"),
   SwiftSetting.enableExperimentalFeature("IsolatedAny"),
   SwiftSetting.enableExperimentalFeature("MoveOnlyPartialConsumption"),
   SwiftSetting.enableExperimentalFeature("NestedProtocols"),
   SwiftSetting.enableExperimentalFeature("NoncopyableGenerics"),
-  SwiftSetting.enableExperimentalFeature("RegionBasedIsolation"),
   SwiftSetting.enableExperimentalFeature("TransferringArgsAndResults"),
   SwiftSetting.enableExperimentalFeature("VariadicGenerics"),
 
@@ -42,7 +41,8 @@ let package = Package(
   ],
   dependencies: [
     .package(url: "https://github.com/brightdigit/Sublimation.git", from: "2.0.1"),
-    .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.26.0")
+    .package(url: "https://github.com/apple/swift-protobuf.git", from: "1.26.0"),
+    .package(url: "https://github.com/apple/swift-log.git", from: "1.6.0")
   ],
   targets: [
     .target(
@@ -50,7 +50,8 @@ let package = Package(
       dependencies: [
         .product(name: "Sublimation", package: "Sublimation"),
         .product(name: "SublimationCore", package: "Sublimation"),
-        .product(name: "SwiftProtobuf", package: "swift-protobuf")
+        .product(name: "SwiftProtobuf", package: "swift-protobuf"),
+        .product(name: "Logging", package: "swift-log")
       ],
       swiftSettings: swiftSettings
     ),
@@ -60,4 +61,4 @@ let package = Package(
     )
   ]
 )
-
+// swiftlint:enable explicit_acl explicit_top_level_acl

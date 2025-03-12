@@ -1,5 +1,5 @@
 //
-//  SublimationBonjourTests.swift
+//  NWTXTRecord.swift
 //  SublimationBonjour
 //
 //  Created by Leo Dion.
@@ -27,9 +27,22 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import XCTest
+#if canImport(Network)
+  import Foundation
+  import Network
 
-internal final class SublimationBonjourTests: XCTestCase {
-  internal func testExample() throws {
+  extension NWTXTRecord {
+    internal init(
+      data: Data,
+      maxLength: Int = 199,
+      keyPrefix: String = "Sublimation_"
+    ) {
+      let txtRecordValues = data.base64EncodedString().splitByMaxLength(199)
+      let dictionary = txtRecordValues.enumerated()
+        .reduce(into: [String: String]()) { result, value in
+          result["\(keyPrefix)\(value.offset)"] = String(value.element)
+        }
+      self.init(dictionary)
+    }
   }
-}
+#endif

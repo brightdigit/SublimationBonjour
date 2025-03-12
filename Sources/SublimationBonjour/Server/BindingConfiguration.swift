@@ -3,7 +3,7 @@
 //  SublimationBonjour
 //
 //  Created by Leo Dion.
-//  Copyright © 2024 BrightDigit.
+//  Copyright © 2025 BrightDigit.
 //
 //  Permission is hereby granted, free of charge, to any person
 //  obtaining a copy of this software and associated documentation
@@ -48,7 +48,7 @@ extension BindingConfiguration {
   ///   - port: The port number of the server.
   ///   - isSecure: Whether to use https or http.
   ///
-  public init(hosts: [String], port: Int = 8080, isSecure: Bool = false) {
+  public init(hosts: [String], port: Int = 8_080, isSecure: Bool = false) {
     self.init()
     self.hosts = hosts
     self.isSecure = isSecure

@@ -3,7 +3,7 @@
 //  SublimationBonjour
 //
 //  Created by Leo Dion.
-//  Copyright © 2024 BrightDigit.
+//  Copyright © 2025 BrightDigit.
 //
 //  Permission is hereby granted, free of charge, to any person
 //  obtaining a copy of this software and associated documentation
@@ -29,17 +29,59 @@
 
 #if canImport(Network)
   import Foundation
+  import Logging
   public import Network
 
+  extension NWConnection {
+    internal func start(
+      on queue: DispatchQueue,
+      sendingData data: Data,
+      loggingTo logger: Logger
+    ) {
+      self.stateUpdateHandler = { state in
+        self.onConnectionState(state, sendingData: data, loggingTo: logger)
+      }
+      self.start(queue: queue)
+    }
+
+    private func onConnectionState(
+      _ state: NWConnection.State, sendingData data: Data, loggingTo logger: Logger
+    ) {
+      switch state {
+      case .waiting(let error):
+
+        logger.debug("Connection Waiting error: \(error.localizedDescription)")
+
+      case .ready:
+        logger.debug("Connection Ready")
+        logger.debug("Sending data \(data.count) bytes")
+        self.send(
+          content: data,
+          completion: .contentProcessed { error in
+            if let error { logger.error("Connection Send error: \(error)") }
+            self.cancel()
+          }
+        )
+      case .failed(let error): logger.debug("Connection Failure: \(error)")
+      default: logger.debug("Connection state updated: \(state.debugDescription)")
+      }
+    }
+  }
+
   extension NWConnection.State: @retroactive CustomDebugStringConvertible {
-    @_documentation(visibility: internal) public var debugDescription: String {
-      switch self { case .setup: return "setup" case .waiting(let error):
+    // swift-format-ignore
+    @_documentation(visibility: internal)
+    public var debugDescription: String {
+      switch self {
+      case .setup: return "setup"
+
+      case .waiting(let error):
         return "waiting: \(error.debugDescription)"
-        case .preparing: return "preparing"
-        case .ready: return "ready"
-        case .failed(let error): return "failed:  \(error.debugDescription)"
-        case .cancelled: return "cancelled"
-        @unknown default: return "unknown state"
+      case .preparing: return "preparing"
+      case .ready: return "ready"
+      case .failed(let error): return "failed:  \(error.debugDescription)"
+      case .cancelled: return "cancelled"
+      @unknown default: return "unknown state"
       }
     }
   }

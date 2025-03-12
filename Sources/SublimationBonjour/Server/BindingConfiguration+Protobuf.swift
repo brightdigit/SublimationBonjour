@@ -8,7 +8,7 @@ public import SwiftProtobuf
 // incompatible with the version of SwiftProtobuf to which you are linking.
 // Please ensure that you are building against the same version of the API
 // that was used to generate this file.
-fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
+private struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAPIVersionCheck {
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
@@ -58,8 +58,7 @@ public struct BindingConfiguration {
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 extension BindingConfiguration: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase,
-  SwiftProtobuf._ProtoNameProviding
-{
+  SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = "BindingConfiguration"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "is_secure"), 2: .same(proto: "port"), 9: .same(proto: "hosts"),

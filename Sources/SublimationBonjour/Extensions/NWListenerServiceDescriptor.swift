@@ -1,5 +1,5 @@
 //
-//  SublimationBonjourTests.swift
+//  NWListenerServiceDescriptor.swift
 //  SublimationBonjour
 //
 //  Created by Leo Dion.
@@ -27,9 +27,17 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-import XCTest
+#if canImport(Network)
+  import Foundation
+  import Logging
+  import Network
 
-internal final class SublimationBonjourTests: XCTestCase {
-  internal func testExample() throws {
+  internal protocol NWListenerServiceDescriptor: Sendable {
+    var logger: Logger { get }
+    var listener: NWListener { get }
+    var name: String { get }
+    var type: String { get }
+    var listenerQueue: DispatchQueue { get }
+    var connectionQueue: DispatchQueue { get }
   }
-}
+#endif
