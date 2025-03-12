@@ -1,6 +1,6 @@
 //
 //  Sublimation+Bonjour.swift
-//  SimulatorServices
+//  SublimationBonjour
 //
 //  Created by Leo Dion.
 //  Copyright © 2025 BrightDigit.
