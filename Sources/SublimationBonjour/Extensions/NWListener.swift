@@ -29,7 +29,6 @@
 
 #if canImport(Network)
   import Foundation
-  import Logging
   public import Network
 
   extension NWListener {
@@ -39,24 +38,22 @@
       onConnectionSend data: Data
     ) async throws {
       self.startWith(descriptor, txtRecord: txtRecord, onConnectionSend: data)
-      try await self.run(logger: descriptor.logger)
+      try await self.run()
     }
 
-    private func run(logger: Logger) async throws {
+    private func run() async throws {
       try await withCheckedThrowingContinuation {
         // swiftlint:disable:next closure_parameter_position
         (continuation: CheckedContinuation<Void, any Error>) in
         self.stateUpdateHandler = { state in
           switch state {
           case .waiting(let error):
-            logger.warning("Listener Waiting error: \(error)")
             continuation.resume(throwing: error)
 
           case .failed(let error):
-            logger.error("Listener Failure: \(error)")
             continuation.resume(throwing: error)
           case .cancelled: continuation.resume()
-          default: logger.debug("Listener state updated: \(state.debugDescription)")
+          default: break
           }
         }
       }
@@ -73,12 +70,10 @@
         type: descriptor.type,
         txtRecord: txtRecord
       )
-      let logger = descriptor.logger
       self.newConnectionHandler = { connection in
         connection.start(
           on: descriptor.connectionQueue,
-          sendingData: data,
-          loggingTo: logger
+          sendingData: data
         )
       }
 
