@@ -30,6 +30,21 @@
 internal import Foundation
 
 extension String {
+  // swift-format-ignore: NeverUseForceTry
+  private nonisolated(unsafe) static let ipv6Regex = {
+    // IPv6 regex pattern that covers most valid formats
+    // This pattern allows for:
+    // - Full 8 groups of 4 hex digits
+    // - Compressed notation with ::
+    // - IPv4-mapped addresses (::ffff:192.168.1.1)
+    // - Zone identifiers (%interface)
+    let pattern =
+      // swiftlint:disable:next line_length
+      #"^(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[a-zA-Z][0-9a-zA-Z]*|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$"#
+    // swiftlint:disable:next force_try
+    return try! Regex(pattern)
+  }()
+
   internal func isLocalhost() -> Bool {
     let localhostNames = ["localhost", "127.0.0.1", "::1"]
     return localhostNames.contains(self)
@@ -37,8 +52,12 @@ extension String {
 
   internal func isValidIPv6Address() -> Bool {
     // First check basic format requirements
-    guard !self.isEmpty else { return false }
-    guard self.contains(":") else { return false }
+    guard !self.isEmpty else {
+      return false
+    }
+    guard self.contains(":") else {
+      return false
+    }
 
     // Check if it's a valid IPv4 address (which would be invalid for IPv6)
     if self.isValidIPv4Address() {
@@ -61,29 +80,20 @@ extension String {
     return self.isValidIPv6Format()
   }
 
-  private nonisolated(unsafe) static let ipv6Regex = {
-    // IPv6 regex pattern that covers most valid formats
-    // This pattern allows for:
-    // - Full 8 groups of 4 hex digits
-    // - Compressed notation with ::
-    // - IPv4-mapped addresses (::ffff:192.168.1.1)
-    // - Zone identifiers (%interface)
-    let pattern =
-      #"^(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[a-zA-Z][0-9a-zA-Z]*|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$"#
-
-    return try! Regex(pattern)
-  }()
-
   private func isValidIPv6Format() -> Bool {
     self.wholeMatch(of: Self.ipv6Regex) != nil
   }
 
   private func isValidIPv4Address() -> Bool {
     let components = self.split(separator: ".")
-    guard components.count == 4 else { return false }
+    guard components.count == 4 else {
+      return false
+    }
 
     for component in components {
-      guard let num = Int(component), num >= 0 && num <= 255 else { return false }
+      guard let num = Int(component), num >= 0 && num <= 255 else {
+        return false
+      }
     }
     return true
   }

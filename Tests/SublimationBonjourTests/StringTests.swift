@@ -31,7 +31,8 @@ import Testing
 
 @testable import SublimationBonjour
 
-struct StringTests {
+// swiftlint:disable file_length type_body_length
+internal struct StringTests {
   // MARK: - IPv6 Address Validation Tests
 
   @Test(
@@ -74,8 +75,10 @@ struct StringTests {
       "fd00::1",
       "fc00::1",
     ])
-  func validateValidIPv6Addresses(_ address: String) async throws {
-    #expect(address.isValidIPv6Address(), "Expected '\(address)' to be a valid IPv6 address")
+  internal func validateValidIPv6Addresses(_ address: String) async throws {
+    #expect(
+      address.isValidIPv6Address(),
+      "Expected '\(address)' to be a valid IPv6 address")
   }
 
   @Test(
@@ -128,8 +131,10 @@ struct StringTests {
       "fe80::1%lo0%",  // Multiple % signs
       "fe80::1%lo0%en0",  // Multiple % signs
     ])
-  func rejectInvalidIPv6Addresses(_ address: String) async throws {
-    #expect(!address.isValidIPv6Address(), "Expected '\(address)' to be an invalid IPv6 address")
+  internal func rejectInvalidIPv6Addresses(_ address: String) async throws {
+    #expect(
+      !address.isValidIPv6Address(),
+      "Expected '\(address)' to be an invalid IPv6 address")
   }
 
   @Test(
@@ -139,8 +144,10 @@ struct StringTests {
       "2001:0DB8:85A3:0000:0000:8A2E:0370:7334",  // All uppercase
       "2001:0Db8:85A3:0000:0000:8a2E:0370:7334",  // Mixed case
     ])
-  func validateIPv6AddressCaseInsensitive(_ address: String) async throws {
-    #expect(address.isValidIPv6Address(), "Expected '\(address)' to be valid regardless of case")
+  internal func validateIPv6AddressCaseInsensitive(_ address: String) async throws {
+    #expect(
+      address.isValidIPv6Address(),
+      "Expected '\(address)' to be valid regardless of case")
   }
 
   @Test(
@@ -152,12 +159,14 @@ struct StringTests {
       " 2001:db8:85a3:0000:0000:8a2e:0370:7334 ",  // Whitespace
       "2001:db8:85a3:0000:0000:8a2e:0370:7334\n",  // Newlines
     ])
-  func rejectIPv6AddressEdgeCases(_ address: String) async throws {
-    #expect(!address.isValidIPv6Address(), "Expected edge case '\(address)' to be rejected")
+  internal func rejectIPv6AddressEdgeCases(_ address: String) async throws {
+    #expect(
+      !address.isValidIPv6Address(),
+      "Expected edge case '\(address)' to be rejected")
   }
 
   @Test("IPv6 address validation should be consistent")
-  func ensureIPv6AddressValidationConsistency() async throws {
+  internal func ensureIPv6AddressValidationConsistency() async throws {
     // Test that the same address always returns the same result
     let testAddress = "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
     let result1 = testAddress.isValidIPv6Address()
@@ -182,8 +191,10 @@ struct StringTests {
       "172.16.0.1",
       "192.168.0.1",
     ])
-  func rejectIPv4Addresses(_ address: String) async throws {
-    #expect(!address.isValidIPv6Address(), "Expected IPv4 address '\(address)' to be rejected")
+  internal func rejectIPv4Addresses(_ address: String) async throws {
+    #expect(
+      !address.isValidIPv6Address(),
+      "Expected IPv4 address '\(address)' to be rejected")
   }
 
   @Test(
@@ -197,8 +208,10 @@ struct StringTests {
       "my-server.local",
       "api.example.org",
     ])
-  func rejectHostnames(_ hostname: String) async throws {
-    #expect(!hostname.isValidIPv6Address(), "Expected hostname '\(hostname)' to be rejected")
+  internal func rejectHostnames(_ hostname: String) async throws {
+    #expect(
+      !hostname.isValidIPv6Address(),
+      "Expected hostname '\(hostname)' to be rejected")
   }
 
   @Test(
@@ -210,8 +223,10 @@ struct StringTests {
       "fe80::1%eth0",
       "fe80::1%bridge0",
     ])
-  func validateIPv6AddressesWithZoneIdentifiers(_ address: String) async throws {
-    #expect(address.isValidIPv6Address(), "Expected '\(address)' with zone identifier to be valid")
+  internal func validateIPv6AddressesWithZoneIdentifiers(_ address: String) async throws {
+    #expect(
+      address.isValidIPv6Address(),
+      "Expected '\(address)' with zone identifier to be valid")
   }
 
   @Test(
@@ -223,8 +238,12 @@ struct StringTests {
       "fe80::1%lo0%en0",  // Multiple % signs
       "2001:db8::1%lo0",  // Zone on non-link-local
     ])
-  func rejectIPv6AddressesWithInvalidZoneIdentifiers(_ address: String) async throws {
-    #expect(!address.isValidIPv6Address(), "Expected '\(address)' with invalid zone to be rejected")
+  internal func rejectIPv6AddressesWithInvalidZoneIdentifiers(
+    _ address: String
+  ) async throws {
+    #expect(
+      !address.isValidIPv6Address(),
+      "Expected '\(address)' with invalid zone to be rejected")
   }
 
   @Test(
@@ -236,8 +255,10 @@ struct StringTests {
       "::ffff:127.0.0.1",
       "::ffff:8.8.8.8",
     ])
-  func validateIPv4MappedAddresses(_ address: String) async throws {
-    #expect(address.isValidIPv6Address(), "Expected IPv4-mapped address '\(address)' to be valid")
+  internal func validateIPv4MappedAddresses(_ address: String) async throws {
+    #expect(
+      address.isValidIPv6Address(),
+      "Expected IPv4-mapped address '\(address)' to be valid")
   }
 
   @Test(
@@ -248,7 +269,7 @@ struct StringTests {
       "::ffff:192.168.1.1.1",  // Too many IPv4 octets
       "::ffff:192.168.1.1.1.1",  // Way too many octets
     ])
-  func rejectInvalidIPv4MappedAddresses(_ address: String) async throws {
+  internal func rejectInvalidIPv4MappedAddresses(_ address: String) async throws {
     #expect(
       !address.isValidIPv6Address(),
       "Expected invalid IPv4-mapped address '\(address)' to be rejected")
@@ -264,8 +285,10 @@ struct StringTests {
       "::8a2e:370:7334",  // Leading compression
       "2001:db8:85a3::",  // Trailing compression
     ])
-  func validateCompressedIPv6Addresses(_ address: String) async throws {
-    #expect(address.isValidIPv6Address(), "Expected compressed address '\(address)' to be valid")
+  internal func validateCompressedIPv6Addresses(_ address: String) async throws {
+    #expect(
+      address.isValidIPv6Address(),
+      "Expected compressed address '\(address)' to be valid")
   }
 
   @Test(
@@ -276,9 +299,10 @@ struct StringTests {
       ":::1",  // Too many colons
       "2001:::",  // Ends with too many colons
     ])
-  func rejectInvalidCompressedIPv6Addresses(_ address: String) async throws {
+  internal func rejectInvalidCompressedIPv6Addresses(_ address: String) async throws {
     #expect(
       !address.isValidIPv6Address(),
       "Expected invalid compressed address '\(address)' to be rejected")
   }
 }
+// swiftlint:enable file_length type_body_length
