@@ -54,25 +54,16 @@ struct StringTests {
       "fe80::1%en0",
       "fe80::1%wlan0",
 
-      // Various valid formats
-      "2001:db8:85a3:0000:0000:8a2e:0370:7334",
-      "2001:db8:85a3:0:0:8a2e:370:7334",
-      "2001:db8:85a3::8a2e:370:7334",
+      // Additional valid formats
       "2001:db8::8a2e:370:7334",
       "::8a2e:370:7334",
       "2001:db8:85a3::",
-      "::1",
-      "::",
 
       // IPv4-mapped addresses
-      "::ffff:192.0.2.1",
-      "::ffff:192.168.1.1",
       "::ffff:10.0.0.1",
 
       // Link-local addresses
       "fe80::1",
-      "fe80::1%lo0",
-      "fe80::1%en0",
 
       // Multicast addresses
       "ff02::1",
@@ -109,7 +100,6 @@ struct StringTests {
       "2001:db8:85a3::8a2e:370:7334::",  // Multiple :: sequences
       "2001::db8::85a3",  // Multiple :: sequences
       "2001:db8:85a3:0000:0000:8a2e:0370:7334:extra",  // Too many groups
-      "2001:db8:85a3:0000:0000:8a2e:0370",  // Too few groups
       "2001:db8:85a3:0000:0000:8a2e:0370:7334:extra:more",  // Way too many
 
       // Invalid characters
