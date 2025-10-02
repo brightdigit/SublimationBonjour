@@ -29,11 +29,9 @@
 
 #if canImport(Network)
   import Foundation
-  import Logging
   import Network
 
   internal protocol NWListenerServiceDescriptor: Sendable {
-    var logger: Logger { get }
     var listener: NWListener { get }
     var name: String { get }
     var type: String { get }

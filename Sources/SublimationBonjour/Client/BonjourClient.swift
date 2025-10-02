@@ -31,12 +31,6 @@
   public import Foundation
   internal import Network
 
-  #if canImport(os)
-    public import os
-  #elseif canImport(Logging)
-    public import Logging
-  #endif
-
   /// Client for fetching the url of the host server.
   ///
   /// On the device, create a ``BonjourClient`` and

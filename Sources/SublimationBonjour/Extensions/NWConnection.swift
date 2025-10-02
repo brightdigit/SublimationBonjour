@@ -29,41 +29,35 @@
 
 #if canImport(Network)
   import Foundation
-  import Logging
   public import Network
 
   extension NWConnection {
     internal func start(
       on queue: DispatchQueue,
-      sendingData data: Data,
-      loggingTo logger: Logger
+      sendingData data: Data
     ) {
       self.stateUpdateHandler = { state in
-        self.onConnectionState(state, sendingData: data, loggingTo: logger)
+        self.onConnectionState(state, sendingData: data)
       }
       self.start(queue: queue)
     }
 
     private func onConnectionState(
-      _ state: NWConnection.State, sendingData data: Data, loggingTo logger: Logger
+      _ state: NWConnection.State, sendingData data: Data
     ) {
       switch state {
-      case .waiting(let error):
-
-        logger.debug("Connection Waiting error: \(error.localizedDescription)")
+      case .waiting:
+        break
 
       case .ready:
-        logger.debug("Connection Ready")
-        logger.debug("Sending data \(data.count) bytes")
         self.send(
           content: data,
-          completion: .contentProcessed { error in
-            if let error { logger.error("Connection Send error: \(error)") }
+          completion: .contentProcessed { _ in
             self.cancel()
           }
         )
-      case .failed(let error): logger.debug("Connection Failure: \(error)")
-      default: logger.debug("Connection state updated: \(state.debugDescription)")
+      case .failed: break
+      default: break
       }
     }
   }

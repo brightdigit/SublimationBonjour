@@ -30,7 +30,6 @@
 #if canImport(Network)
 
   internal import Foundation
-  public import Logging
   public import Network
   public import SublimationCore
 
@@ -44,7 +43,6 @@
     public static let defaultParameters: NWParameters = .tcp
 
     private let bindingConfiguration: BindingConfiguration
-    internal let logger: Logger
     internal let listener: NWListener
     internal let name: String
     internal let type: String
@@ -95,7 +93,6 @@
     /// Uses a `NWListener` to broadcast the server information.
     /// - Parameters:
     ///   - bindingConfiguration: A ``BindingConfiguration``
-    ///   - logger: A logger.
     ///   - listener: The `NWListener` to use.
     ///   - name: Service name.
     ///   - type: Service type.
@@ -103,7 +100,6 @@
     ///   - connectionQueue: DispatchQueue for each new connection made.
     public init(
       bindingConfiguration: BindingConfiguration,
-      logger: Logger,
       listener: NWListener,
       name: String = Self.defaultName,
       type: String = Self.defaultHttpTCPServiceType,
@@ -111,7 +107,6 @@
       connectionQueue: DispatchQueue = .global()
     ) {
       self.bindingConfiguration = bindingConfiguration
-      self.logger = logger
       self.listener = listener
       self.name = name
       self.type = type
@@ -122,7 +117,6 @@
     /// Creates a `NWListener` to broadcast the server information.
     /// - Parameters:
     ///   - bindingConfiguration: A ``BindingConfiguration``
-    ///   - logger: A logger.
     ///   - listenerParameters: The network parameters to use for the listener.
     ///   - name: Service name.
     ///   - type: Service type.
@@ -131,7 +125,6 @@
     /// - Throws: an error if the parameters are not compatible with the provided port.
     public init(
       bindingConfiguration: BindingConfiguration,
-      logger: Logger,
       listenerParameters: NWParameters = Self.defaultParameters,
       name: String = Self.defaultName,
       type: String = Self.defaultHttpTCPServiceType,
@@ -141,7 +134,6 @@
       let listener = try NWListener(using: listenerParameters)
       self.init(
         bindingConfiguration: bindingConfiguration,
-        logger: logger,
         listener: listener,
         name: name,
         type: type,
