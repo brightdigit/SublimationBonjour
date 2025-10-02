@@ -45,6 +45,8 @@ jobs:
       matrix:
         runs-on: [windows-2022, windows-2025]
         swift:
+          - version: "6.0-release"
+            build: "6.0-RELEASE"
           - version: "6.1-release"
             build: "6.1-RELEASE"
           - version: "6.2-release"
@@ -76,11 +78,16 @@ jobs:
         include:
            # SPM Build Matrix
           - runs-on: macos-15
+            xcode: "/Applications/Xcode_16.1.app"
+          - runs-on: macos-15
             xcode: "/Applications/Xcode_16.4.app"
           - runs-on: macos-26
             xcode: "/Applications/Xcode_26.0.app"
             
             
+          - type: macos
+            runs-on: macos-15
+            xcode: "/Applications/Xcode_16.1.app"
           - type: macos
             runs-on: macos-15
             xcode: "/Applications/Xcode_16.4.app"
@@ -89,6 +96,13 @@ jobs:
             xcode: "/Applications/Xcode_26.0.app"
           
           # iOS Build Matrix
+          - type: ios
+            runs-on: macos-15
+            xcode: "/Applications/Xcode_16.1.app"
+            deviceName: "iPhone 16"
+            osVersion: "18.5"
+            download-platform: true    
+            
           - type: ios
             runs-on: macos-15
             xcode: "/Applications/Xcode_16.4.app"
@@ -103,6 +117,13 @@ jobs:
             download-platform: true  
             
           # watchOS Build Matrix
+          - type: watchos
+            runs-on: macos-15
+            xcode: "/Applications/Xcode_16.1.app"
+            deviceName: "Apple Watch Ultra 2 (49mm)"
+            osVersion: "11.5"
+            download-platform: true    
+            
           - type: watchos
             runs-on: macos-15
             xcode: "/Applications/Xcode_16.4.app"
