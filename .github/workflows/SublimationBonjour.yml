@@ -44,24 +44,24 @@ jobs:
       fail-fast: false
       matrix:
         runs-on: [windows-2022, windows-2025]
-        include:
-          - swift-version: swift-6.0-release
-            swift-build: 6.0-RELEASE
-          - swift-version: swift-6.1-release
-            swift-build: 6.1-RELEASE
-          - swift-version: swift-6.2-release
-            swift-build: 6.2-RELEASE
+        swift:
+          - version: "6.0-release"
+            build: "6.0-RELEASE"
+          - version: "6.1-release"
+            build: "6.1-RELEASE"
+          - version: "6.2-release"
+            build: "6.2-RELEASE"
     steps:
       - uses: actions/checkout@v4
       - uses: brightdigit/swift-build@v1.3.4
         with:
-          windows-swift-version: ${{ matrix.swift-version }}
-          windows-swift-build: ${{ matrix.swift-build }}
+          windows-swift-version: swift-${{ matrix.swift.version }}
+          windows-swift-build: ${{ matrix.swift.build }}
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5    
         with:
           fail_ci_if_error: true
-          flags: swift-${{ matrix.swift-version }},windows
+          flags: swift-${{ matrix.swift.version }},windows
           verbose: true        
           token: ${{ secrets.CODECOV_TOKEN }}
           os: windows
@@ -101,6 +101,8 @@ jobs:
             xcode: "/Applications/Xcode_16.1.app"
             deviceName: "iPhone 16"
             osVersion: "18.5"
+            download-platform: true    
+            
           - type: ios
             runs-on: macos-15
             xcode: "/Applications/Xcode_16.4.app"
@@ -120,6 +122,7 @@ jobs:
             xcode: "/Applications/Xcode_16.1.app"
             deviceName: "Apple Watch Ultra 2 (49mm)"
             osVersion: "11.5"
+            download-platform: true    
             
           - type: watchos
             runs-on: macos-15
