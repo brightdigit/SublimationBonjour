@@ -31,6 +31,9 @@
   public import Foundation
   internal import Network
 
+  #if canImport(os)
+    internal import os
+  #endif
   /// Client for fetching the url of the host server.
   ///
   /// On the device, create a ``BonjourClient`` and
