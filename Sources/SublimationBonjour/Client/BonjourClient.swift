@@ -32,7 +32,7 @@
   internal import Network
 
   #if canImport(os)
-    internal import os
+    public import os
   #endif
   /// Client for fetching the url of the host server.
   ///
