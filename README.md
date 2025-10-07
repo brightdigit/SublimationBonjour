@@ -9,7 +9,6 @@ Use [Bonjour](https://developer.apple.com/bonjour/) for [Sublimation](https://gi
 [![SwiftPM](https://img.shields.io/badge/SPM-Linux%20%7C%20iOS%20%7C%20macOS%20%7C%20watchOS%20%7C%20tvOS-success?logo=swift)](https://swift.org)
 [![Twitter](https://img.shields.io/badge/twitter-@brightdigit-blue.svg?style=flat)](http://twitter.com/brightdigit)
 ![GitHub](https://img.shields.io/github/license/brightdigit/SublimationBonjour)
-![GitHub issues](https://img.shields.io/github/issues/brightdigit/SublimationBonjour)
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/brightdigit/SublimationBonjour/SublimationBonjour.yml?label=actions&logo=github&?branch=main)
 
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fbrightdigit%2FSublimationBonjour%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/brightdigit/SublimationBonjour)
@@ -18,10 +17,7 @@ Use [Bonjour](https://developer.apple.com/bonjour/) for [Sublimation](https://gi
 
 [![Codecov](https://img.shields.io/codecov/c/github/brightdigit/SublimationBonjour)](https://codecov.io/gh/brightdigit/SublimationBonjour)
 [![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/brightdigit/SublimationBonjour)](https://www.codefactor.io/repository/github/brightdigit/SublimationBonjour)
-[![codebeat badge](https://codebeat.co/badges/91d512f0-ab30-42f9-9791-02add3278171)](https://codebeat.co/projects/github-com-brightdigit-SublimationBonjour-main)
-[![Code Climate maintainability](https://img.shields.io/codeclimate/maintainability/brightdigit/SublimationBonjour)](https://codeclimate.com/github/brightdigit/SublimationBonjour)
-[![Code Climate technical debt](https://img.shields.io/codeclimate/tech-debt/brightdigit/SublimationBonjour?label=debt)](https://codeclimate.com/github/brightdigit/SublimationBonjour)
-[![Code Climate issues](https://img.shields.io/codeclimate/issues/brightdigit/SublimationBonjour)](https://codeclimate.com/github/brightdigit/SublimationBonjour)
+[![Maintainability](https://qlty.sh/gh/brightdigit/projects/SublimationBonjour/maintainability.svg)](https://qlty.sh/gh/brightdigit/projects/SublimationBonjour)
 
 # Table of Contents
 
