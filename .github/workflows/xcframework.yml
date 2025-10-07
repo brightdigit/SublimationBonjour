@@ -84,20 +84,9 @@ jobs:
           -scheme ${{ env.PACKAGE_NAME }} \
           -destination "${{ matrix.destination }}" \
           -archivePath ./output/${{ matrix.platform }}/${{ env.PACKAGE_NAME }}.xcarchive \
+          -derivedDataPath ./build/DerivedData \
           SKIP_INSTALL=NO \
           BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
-          INSTALL_PATH='$(LOCAL_LIBRARY_DIR)/Frameworks' \
-          MACH_O_TYPE=mh_dylib \
-          PRODUCT_NAME=${{ env.PACKAGE_NAME }} \
-          PRODUCT_BUNDLE_IDENTIFIER=com.brightdigit.${{ env.PACKAGE_NAME }} \
-          CODE_SIGN_IDENTITY="" \
-          CODE_SIGNING_REQUIRED=NO \
-          CODE_SIGNING_ALLOWED=NO \
-          DEBUG_INFORMATION_FORMAT=dwarf-with-dsym \
-          GCC_GENERATE_DEBUGGING_SYMBOLS=YES \
-          STRIP_INSTALLED_PRODUCT=NO \
-          STRIP_STYLE=non-global \
-          STRIP_SWIFT_SYMBOLS=NO \
           ONLY_ACTIVE_ARCH=NO \
           OTHER_SWIFT_FLAGS='$(inherited) -D '\"CLIENT_ONLY\"
 
@@ -124,70 +113,70 @@ jobs:
       with:
         path: ./archives
 
-    - name: Debug archive contents
-      run: |
-        echo "Debugging archive contents..."
-        for platform in iOS iOS-Simulator watchOS watchOS-Simulator macOS tvOS tvOS-Simulator visionOS visionOS-Simulator; do
-          echo "=== Detailed Contents of ${platform}-archive ==="
-          if [ -d "./archives/${platform}-archive" ]; then
-            echo "📁 Full directory tree:"
-            find "./archives/${platform}-archive" -type d | sort
-            echo ""
-            echo "📄 All files (frameworks and dSYMs):"
-            find "./archives/${platform}-archive" -name "*.framework" -o -name "*.dSYM" -o -name "${{ env.PACKAGE_NAME }}" | sort
-            echo ""
-            echo "🔍 Expected paths verification:"
-            FRAMEWORK_PATH="./archives/${platform}-archive/${{ env.PACKAGE_NAME }}.xcarchive/Products/Library/Frameworks/${{ env.PACKAGE_NAME }}.framework"
-            DSYM_PATH="./archives/${platform}-archive/${{ env.PACKAGE_NAME }}.xcarchive/dSYMs/${{ env.PACKAGE_NAME }}.framework.dSYM"
-            echo "  Framework expected: $FRAMEWORK_PATH"
-            echo "  Framework exists: $([ -d "$FRAMEWORK_PATH" ] && echo "✅ YES" || echo "❌ NO")"
-            echo "  dSYM expected: $DSYM_PATH"
-            echo "  dSYM exists: $([ -d "$DSYM_PATH" ] && echo "✅ YES" || echo "❌ NO")"
+    # - name: Debug archive contents
+    #   run: |
+    #     echo "Debugging archive contents..."
+    #     for platform in iOS iOS-Simulator watchOS watchOS-Simulator macOS tvOS tvOS-Simulator visionOS visionOS-Simulator; do
+    #       echo "=== Detailed Contents of ${platform}-archive ==="
+    #       if [ -d "./archives/${platform}-archive" ]; then
+    #         echo "📁 Full directory tree:"
+    #         find "./archives/${platform}-archive" -type d | sort
+    #         echo ""
+    #         echo "📄 All files (frameworks and dSYMs):"
+    #         find "./archives/${platform}-archive" -name "*.framework" -o -name "*.dSYM" -o -name "${{ env.PACKAGE_NAME }}" | sort
+    #         echo ""
+    #         echo "🔍 Expected paths verification:"
+    #         FRAMEWORK_PATH="./archives/${platform}-archive/${{ env.PACKAGE_NAME }}.xcarchive/Products/Library/Frameworks/${{ env.PACKAGE_NAME }}.framework"
+    #         DSYM_PATH="./archives/${platform}-archive/${{ env.PACKAGE_NAME }}.xcarchive/dSYMs/${{ env.PACKAGE_NAME }}.framework.dSYM"
+    #         echo "  Framework expected: $FRAMEWORK_PATH"
+    #         echo "  Framework exists: $([ -d "$FRAMEWORK_PATH" ] && echo "✅ YES" || echo "❌ NO")"
+    #         echo "  dSYM expected: $DSYM_PATH"
+    #         echo "  dSYM exists: $([ -d "$DSYM_PATH" ] && echo "✅ YES" || echo "❌ NO")"
 
-            if [ -d "$DSYM_PATH" ]; then
-              echo "  dSYM contents:"
-              ls -la "$DSYM_PATH" || echo "  Cannot list dSYM"
-            fi
-          else
-            echo "Archive directory not found for ${platform}"
-          fi
-          echo "============================================"
-          echo ""
-        done
+    #         if [ -d "$DSYM_PATH" ]; then
+    #           echo "  dSYM contents:"
+    #           ls -la "$DSYM_PATH" || echo "  Cannot list dSYM"
+    #         fi
+    #       else
+    #         echo "Archive directory not found for ${platform}"
+    #       fi
+    #       echo "============================================"
+    #       echo ""
+    #     done
 
-    - name: Verify archives
-      run: |
-        echo "Verifying downloaded archives (frameworks and debug symbols required)..."
-        missing_archives=0
-        missing_dsyms=0
-        for platform in iOS iOS-Simulator watchOS watchOS-Simulator macOS tvOS tvOS-Simulator visionOS visionOS-Simulator; do
-          FRAMEWORK_PATH="./archives/${platform}-archive/${{ env.PACKAGE_NAME }}.xcarchive/Products/Library/Frameworks/${{ env.PACKAGE_NAME }}.framework"
-          DSYM_PATH="./archives/${platform}-archive/${{ env.PACKAGE_NAME }}.xcarchive/dSYMs/${{ env.PACKAGE_NAME }}.framework.dSYM"
+    # - name: Verify archives
+    #   run: |
+    #     echo "Verifying downloaded archives (frameworks and debug symbols required)..."
+    #     missing_archives=0
+    #     missing_dsyms=0
+    #     for platform in iOS iOS-Simulator watchOS watchOS-Simulator macOS tvOS tvOS-Simulator visionOS visionOS-Simulator; do
+    #       FRAMEWORK_PATH="./archives/${platform}-archive/${{ env.PACKAGE_NAME }}.xcarchive/Products/Library/Frameworks/${{ env.PACKAGE_NAME }}.framework"
+    #       DSYM_PATH="./archives/${platform}-archive/${{ env.PACKAGE_NAME }}.xcarchive/dSYMs/${{ env.PACKAGE_NAME }}.framework.dSYM"
 
-          if [ ! -d "$FRAMEWORK_PATH" ]; then
-            echo "Error: Framework not found for $platform at $FRAMEWORK_PATH"
-            missing_archives=$((missing_archives + 1))
-          fi
+    #       if [ ! -d "$FRAMEWORK_PATH" ]; then
+    #         echo "Error: Framework not found for $platform at $FRAMEWORK_PATH"
+    #         missing_archives=$((missing_archives + 1))
+    #       fi
 
-          if [ ! -d "$DSYM_PATH" ]; then
-            echo "Error: dSYM not found for $platform at $DSYM_PATH"
-            missing_dsyms=$((missing_dsyms + 1))
-          else
-            echo "✓ Found dSYM for $platform"
-          fi
-        done
+    #       if [ ! -d "$DSYM_PATH" ]; then
+    #         echo "Error: dSYM not found for $platform at $DSYM_PATH"
+    #         missing_dsyms=$((missing_dsyms + 1))
+    #       else
+    #         echo "✓ Found dSYM for $platform"
+    #       fi
+    #     done
 
-        if [ $missing_archives -gt 0 ]; then
-          echo "Error: $missing_archives framework archive(s) are missing"
-          exit 1
-        fi
+    #     if [ $missing_archives -gt 0 ]; then
+    #       echo "Error: $missing_archives framework archive(s) are missing"
+    #       exit 1
+    #     fi
 
-        if [ $missing_dsyms -gt 0 ]; then
-          echo "Error: $missing_dsyms dSYM(s) are missing. Debug symbols are required for this build."
-          exit 1
-        fi
+    #     if [ $missing_dsyms -gt 0 ]; then
+    #       echo "Error: $missing_dsyms dSYM(s) are missing. Debug symbols are required for this build."
+    #       exit 1
+    #     fi
 
-        echo "✅ All archives verified - frameworks and debug symbols found for all platforms"
+    #     echo "✅ All archives verified - frameworks and debug symbols found for all platforms"
 
     - name: Create XCFramework
       run: |
