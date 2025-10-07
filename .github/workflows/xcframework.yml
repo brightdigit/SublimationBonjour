@@ -1,59 +1,305 @@
 name: XCFramework Build
+
+# Multi-stage XCFramework build workflow
+# Based on FOD-Web-iOS approach with proper debug symbol handling
+#
+# Architecture:
+# 1. build-archives: Creates separate xcarchive for each platform with dSYMs
+# 2. create-xcframework: Combines all archives into single XCFramework with debug symbols
+
+permissions:
+  contents: write
+  actions: write
+
 on:
+  workflow_dispatch:
+    branches:
+      - main
   push:
     branches-ignore:
       - '*WIP'
   pull_request:
     branches:
       - main
+
 env:
   PACKAGE_NAME: SublimationBonjour
+
 jobs:
-  build-xcframework:
-    name: Build XCFramework
-    runs-on: ${{ matrix.runs-on }}
+  build-archives:
+    name: Building Framework Archives
     if: "!contains(github.event.head_commit.message, 'ci skip')"
+    runs-on: ${{ matrix.runs-on }}
     strategy:
-      fail-fast: false
       matrix:
         include:
-          - runs-on: macos-15
-            xcode: "/Applications/Xcode_16.4.app"
           - runs-on: macos-26
             xcode: "/Applications/Xcode_26.0.app"
+            platform: iOS
+            destination: generic/platform=iOS
           - runs-on: macos-26
-            xcode: "/Applications/Xcode_26.1.app"
+            xcode: "/Applications/Xcode_26.0.app"
+            platform: iOS-Simulator
+            destination: generic/platform=iOS Simulator
+          - runs-on: macos-26
+            xcode: "/Applications/Xcode_26.0.app"
+            platform: watchOS
+            destination: generic/platform=watchOS
+          - runs-on: macos-26
+            xcode: "/Applications/Xcode_26.0.app"
+            platform: watchOS-Simulator
+            destination: generic/platform=watchOS Simulator
+          - runs-on: macos-26
+            xcode: "/Applications/Xcode_26.0.app"
+            platform: macOS
+            destination: generic/platform=macOS
+          - runs-on: macos-26
+            xcode: "/Applications/Xcode_26.0.app"
+            platform: tvOS
+            destination: generic/platform=tvOS
+          - runs-on: macos-26
+            xcode: "/Applications/Xcode_26.0.app"
+            platform: tvOS-Simulator
+            destination: generic/platform=tvOS Simulator
+          - runs-on: macos-26
+            xcode: "/Applications/Xcode_26.0.app"
+            platform: visionOS
+            destination: generic/platform=visionOS
+          - runs-on: macos-26
+            xcode: "/Applications/Xcode_26.0.app"
+            platform: visionOS-Simulator
+            destination: generic/platform=visionOS Simulator
+      fail-fast: true
+
     steps:
-      - uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - name: Select Xcode
-        run: sudo xcode-select -s ${{ matrix.xcode }}
+    - name: Select Xcode
+      run: sudo xcode-select -s ${{ matrix.xcode }}
 
-      - name: Cache Swift Package Manager
-        uses: actions/cache@v4
-        with:
-          path: |
-            .build
-            ~/Library/Developer/Xcode/DerivedData
-          key: ${{ runner.os }}-${{ matrix.xcode }}-spm-${{ hashFiles('Package.resolved') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ matrix.xcode }}-spm-
+    - name: Build archive
+      run: |
+        set -eo pipefail
+        xcodebuild archive \
+          -scheme ${{ env.PACKAGE_NAME }} \
+          -destination "${{ matrix.destination }}" \
+          -archivePath ./output/${{ matrix.platform }}/${{ env.PACKAGE_NAME }}.xcarchive \
+          SKIP_INSTALL=NO \
+          BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
+          DEBUG_INFORMATION_FORMAT=dwarf-with-dsym \
+          GCC_GENERATE_DEBUGGING_SYMBOLS=YES \
+          STRIP_INSTALLED_PRODUCT=NO \
+          STRIP_STYLE=non-global \
+          STRIP_SWIFT_SYMBOLS=NO \
+          ONLY_ACTIVE_ARCH=NO
 
-      - name: Build XCFramework
-        run: ./Scripts/build-xcframework.sh
+    - name: Upload archive
+      if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/v') || github.event_name == 'pull_request'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.platform }}-archive
+        path: ./output/${{ matrix.platform }}
+        retention-days: 1
 
-      - name: Verify XCFramework
-        run: |
-          if [ ! -d "build/xcframework/${{ env.PACKAGE_NAME }}.xcframework" ]; then
-            echo "❌ XCFramework not found"
+  create-xcframework:
+    name: Building XCFramework
+    needs: build-archives
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/v') || github.event_name == 'pull_request'
+    runs-on: macos-26
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.0.app/Contents/Developer
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Download all archives
+      uses: actions/download-artifact@v4
+      with:
+        path: ./archives
+
+    - name: Debug archive contents
+      run: |
+        echo "Debugging archive contents..."
+        for platform in iOS iOS-Simulator watchOS watchOS-Simulator macOS tvOS tvOS-Simulator visionOS visionOS-Simulator; do
+          echo "=== Detailed Contents of ${platform}-archive ==="
+          if [ -d "./archives/${platform}-archive" ]; then
+            echo "📁 Full directory tree:"
+            find "./archives/${platform}-archive" -type d | sort
+            echo ""
+            echo "📄 All files (frameworks and dSYMs):"
+            find "./archives/${platform}-archive" -name "*.framework" -o -name "*.dSYM" -o -name "${{ env.PACKAGE_NAME }}" | sort
+            echo ""
+            echo "🔍 Expected paths verification:"
+            FRAMEWORK_PATH="./archives/${platform}-archive/${{ env.PACKAGE_NAME }}.xcarchive/Products/Library/Frameworks/${{ env.PACKAGE_NAME }}.framework"
+            DSYM_PATH="./archives/${platform}-archive/${{ env.PACKAGE_NAME }}.xcarchive/dSYMs/${{ env.PACKAGE_NAME }}.framework.dSYM"
+            echo "  Framework expected: $FRAMEWORK_PATH"
+            echo "  Framework exists: $([ -d "$FRAMEWORK_PATH" ] && echo "✅ YES" || echo "❌ NO")"
+            echo "  dSYM expected: $DSYM_PATH"
+            echo "  dSYM exists: $([ -d "$DSYM_PATH" ] && echo "✅ YES" || echo "❌ NO")"
+
+            if [ -d "$DSYM_PATH" ]; then
+              echo "  dSYM contents:"
+              ls -la "$DSYM_PATH" || echo "  Cannot list dSYM"
+            fi
+          else
+            echo "Archive directory not found for ${platform}"
+          fi
+          echo "============================================"
+          echo ""
+        done
+
+    - name: Verify archives
+      run: |
+        echo "Verifying downloaded archives (frameworks and debug symbols required)..."
+        missing_archives=0
+        missing_dsyms=0
+        for platform in iOS iOS-Simulator watchOS watchOS-Simulator macOS tvOS tvOS-Simulator visionOS visionOS-Simulator; do
+          FRAMEWORK_PATH="./archives/${platform}-archive/${{ env.PACKAGE_NAME }}.xcarchive/Products/Library/Frameworks/${{ env.PACKAGE_NAME }}.framework"
+          DSYM_PATH="./archives/${platform}-archive/${{ env.PACKAGE_NAME }}.xcarchive/dSYMs/${{ env.PACKAGE_NAME }}.framework.dSYM"
+
+          if [ ! -d "$FRAMEWORK_PATH" ]; then
+            echo "Error: Framework not found for $platform at $FRAMEWORK_PATH"
+            missing_archives=$((missing_archives + 1))
+          fi
+
+          if [ ! -d "$DSYM_PATH" ]; then
+            echo "Error: dSYM not found for $platform at $DSYM_PATH"
+            missing_dsyms=$((missing_dsyms + 1))
+          else
+            echo "✓ Found dSYM for $platform"
+          fi
+        done
+
+        if [ $missing_archives -gt 0 ]; then
+          echo "Error: $missing_archives framework archive(s) are missing"
+          exit 1
+        fi
+
+        if [ $missing_dsyms -gt 0 ]; then
+          echo "Error: $missing_dsyms dSYM(s) are missing. Debug symbols are required for this build."
+          exit 1
+        fi
+
+        echo "✅ All archives verified - frameworks and debug symbols found for all platforms"
+
+    - name: Create XCFramework
+      run: |
+        set -eo pipefail
+        echo "🚀 Creating XCFramework with debug symbols (required)..."
+
+        # Build XCFramework arguments using canonical paths to resolve symlinks
+        XCFRAMEWORK_ARGS=""
+        missing_dsyms=0
+
+        for platform in iOS iOS-Simulator watchOS watchOS-Simulator macOS tvOS tvOS-Simulator visionOS visionOS-Simulator; do
+          FRAMEWORK_PATH="./archives/${platform}-archive/${{ env.PACKAGE_NAME }}.xcarchive/Products/Library/Frameworks/${{ env.PACKAGE_NAME }}.framework"
+          DSYM_PATH="./archives/${platform}-archive/${{ env.PACKAGE_NAME }}.xcarchive/dSYMs/${{ env.PACKAGE_NAME }}.framework.dSYM"
+
+          echo "Processing $platform:"
+          echo "  Framework: $FRAMEWORK_PATH (exists: $([ -d "$FRAMEWORK_PATH" ] && echo "yes" || echo "no"))"
+          echo "  dSYM: $DSYM_PATH (exists: $([ -d "$DSYM_PATH" ] && echo "yes" || echo "no"))"
+
+          # Add framework
+          XCFRAMEWORK_ARGS="$XCFRAMEWORK_ARGS -framework $FRAMEWORK_PATH"
+
+          # Require debug symbols - fail if not found
+          if [ -d "$DSYM_PATH" ]; then
+            echo "  ✓ Found debug symbols for $platform"
+            XCFRAMEWORK_ARGS="$XCFRAMEWORK_ARGS -debug-symbols $DSYM_PATH"
+          else
+            echo "  ✗ Error: Debug symbols not found for $platform"
+            missing_dsyms=$((missing_dsyms + 1))
+          fi
+        done
+
+        # Fail if any debug symbols are missing
+        if [ $missing_dsyms -gt 0 ]; then
+          echo "💥 Error: $missing_dsyms platform(s) are missing debug symbols. Debug symbols are required."
+          echo "Build configuration should include DEBUG_INFORMATION_FORMAT=dwarf-with-dsym"
+          exit 1
+        fi
+
+        echo "Creating XCFramework with debug symbols for all platforms..."
+        echo "Arguments: $XCFRAMEWORK_ARGS"
+
+        # Create XCFramework with debug symbols (no fallback)
+        if xcodebuild -create-xcframework $XCFRAMEWORK_ARGS -output ./${{ env.PACKAGE_NAME }}.xcframework; then
+          echo "✅ Successfully created XCFramework with debug symbols!"
+        else
+          echo "💥 Failed to create XCFramework with debug symbols. No fallback will be attempted."
+          echo "Debug symbols are required for this build."
+          exit 1
+        fi
+
+    - name: Verify XCFramework with embedded dSYMs
+      run: |
+        echo "Verifying XCFramework structure with mandatory debug symbols..."
+        if [ -d "./${{ env.PACKAGE_NAME }}.xcframework" ]; then
+          echo "✓ XCFramework created successfully"
+
+          # List the XCFramework structure
+          echo "XCFramework contents:"
+          find "./${{ env.PACKAGE_NAME }}.xcframework" -type d -name "dSYMs" | while read dsym_dir; do
+            echo "  Found dSYMs directory: $dsym_dir"
+            ls -la "$dsym_dir/" || echo "  Cannot list dSYM contents"
+          done
+
+          # Check if all expected platforms have dSYMs (should be 9)
+          DSYM_COUNT=$(find "./${{ env.PACKAGE_NAME }}.xcframework" -name "*.dSYM" -type d | wc -l)
+          echo "Total dSYM bundles embedded: $DSYM_COUNT"
+
+          if [ "$DSYM_COUNT" -eq 9 ]; then
+            echo "✅ All 9 platforms have debug symbols successfully embedded in XCFramework"
+          elif [ "$DSYM_COUNT" -gt 0 ]; then
+            echo "⚠️  Only $DSYM_COUNT out of 9 expected debug symbols found in XCFramework"
+            exit 1
+          else
+            echo "💥 No debug symbols found in XCFramework - this should not happen!"
             exit 1
           fi
-          echo "✅ XCFramework built successfully"
-          ls -la build/xcframework/
+        else
+          echo "💥 XCFramework creation failed"
+          exit 1
+        fi
 
-      - name: Upload XCFramework Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.PACKAGE_NAME }}-${{ matrix.runs-on }}-xcframework
-          path: build/xcframework/${{ env.PACKAGE_NAME }}.xcframework
-          retention-days: 0.5
+    - name: Create ZIP archive
+      run: |
+        zip -r ${{ env.PACKAGE_NAME }}.xcframework.zip ${{ env.PACKAGE_NAME }}.xcframework
+
+    - name: Upload XCFramework
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.PACKAGE_NAME }}-xcframework
+        path: |
+          ${{ env.PACKAGE_NAME }}.xcframework.zip
+        retention-days: 7
+
+    - name: Delete archive artifacts
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const response = await github.rest.actions.listArtifactsForRepo({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+          });
+
+          const platforms = [
+            'iOS', 'iOS-Simulator',
+            'watchOS', 'watchOS-Simulator',
+            'macOS',
+            'tvOS', 'tvOS-Simulator',
+            'visionOS', 'visionOS-Simulator'
+          ];
+
+          const archiveArtifacts = response.data.artifacts
+            .filter(artifact => platforms.some(platform =>
+              artifact.name === `${platform}-archive`
+            ));
+
+          for (const artifact of archiveArtifacts) {
+            console.log(`Deleting archive artifact ${artifact.id} (${artifact.name})`);
+            await github.rest.actions.deleteArtifact({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              artifact_id: artifact.id,
+            });
+          }
