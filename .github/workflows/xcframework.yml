@@ -91,7 +91,8 @@ jobs:
           STRIP_INSTALLED_PRODUCT=NO \
           STRIP_STYLE=non-global \
           STRIP_SWIFT_SYMBOLS=NO \
-          ONLY_ACTIVE_ARCH=NO
+          ONLY_ACTIVE_ARCH=NO \
+          OTHER_SWIFT_FLAGS='$(inherited) -D CLIENT_ONLY'
 
     - name: Upload archive
       if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/v') || github.event_name == 'pull_request'
