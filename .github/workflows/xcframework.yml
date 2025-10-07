@@ -1,0 +1,59 @@
+name: XCFramework Build
+on:
+  push:
+    branches-ignore:
+      - '*WIP'
+  pull_request:
+    branches:
+      - main
+env:
+  PACKAGE_NAME: SublimationBonjour
+jobs:
+  build-xcframework:
+    name: Build XCFramework
+    runs-on: ${{ matrix.runs-on }}
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runs-on: macos-15
+            xcode: "/Applications/Xcode_16.4.app"
+          - runs-on: macos-26
+            xcode: "/Applications/Xcode_26.0.app"
+          - runs-on: macos-26
+            xcode: "/Applications/Xcode_26.1.app"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s ${{ matrix.xcode }}
+
+      - name: Cache Swift Package Manager
+        uses: actions/cache@v4
+        with:
+          path: |
+            .build
+            ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-${{ matrix.xcode }}-spm-${{ hashFiles('Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.xcode }}-spm-
+
+      - name: Build XCFramework
+        run: ./Scripts/build-xcframework.sh
+
+      - name: Verify XCFramework
+        run: |
+          if [ ! -d "build/xcframework/${{ env.PACKAGE_NAME }}.xcframework" ]; then
+            echo "❌ XCFramework not found"
+            exit 1
+          fi
+          echo "✅ XCFramework built successfully"
+          ls -la build/xcframework/
+
+      - name: Upload XCFramework Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PACKAGE_NAME }}-${{ matrix.runs-on }}-xcframework
+          path: build/xcframework/${{ env.PACKAGE_NAME }}.xcframework
+          retention-days: 0.5
