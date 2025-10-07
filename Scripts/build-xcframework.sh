@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e  # Exit on any error
 
+# Parse arguments
+SWIFT_FLAG="${1:-CLIENT_ONLY}"
+
 # More portable way to get script directory
 if [ -z "$SRCROOT" ]; then
     SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -45,7 +48,7 @@ for PLATFORM_CONFIG in "${PLATFORMS[@]}"; do
 
     echo "📦 Building $PLATFORM (SDK: $SDK)..."
 
-    # Set BUILDING_XCFRAMEWORK to disable Sublimation extension via preprocessor
+    # Set Swift preprocessor flag to conditionally compile code
     # This avoids Swift compiler bug with module/type name conflicts in library evolution
     xcodebuild archive \
         -scheme "$SCHEME_NAME" \
@@ -56,7 +59,7 @@ for PLATFORM_CONFIG in "${PLATFORMS[@]}"; do
         SKIP_INSTALL=NO \
         BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
         ONLY_ACTIVE_ARCH=NO \
-        OTHER_SWIFT_FLAGS='$(inherited) -D BUILDING_XCFRAMEWORK'
+        OTHER_SWIFT_FLAGS='$(inherited) -D '"${SWIFT_FLAG}"
 
     XCFRAMEWORK_ARGS+=(-framework "${ARCHIVE_PATH}/Products/Library/Frameworks/${FRAMEWORK_NAME}.framework")
 done

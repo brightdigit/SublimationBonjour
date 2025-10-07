@@ -27,11 +27,12 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#if canImport(Network) && !BUILDING_XCFRAMEWORK
+#if canImport(Network) && !CLIENT_ONLY
   public import Network
   public import Sublimation
 
   /// Friendly extensions for setting up a `Sublimation` object for `Bonjour`
+  @available(*, deprecated, message: "Use BonjourSublimatory.init.")
   extension Sublimation {
     /// Initializes a `Sublimation` instance with the provided parameters.
     ///
