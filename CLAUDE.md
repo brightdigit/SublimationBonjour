@@ -99,7 +99,6 @@ Tests are located in `Tests/SublimationBonjourTests/`. All platform-specific cod
 
 - **Sublimation** (2.0.1+): Core server discovery framework
 - **swift-protobuf** (1.26.0+): Protocol Buffers serialization for `BindingConfiguration`
-- **swift-log** (1.6.0+): Logging infrastructure
 
 ## Common Patterns
 
@@ -112,8 +111,7 @@ let bindingConfiguration = BindingConfiguration(
 )
 
 let bonjour = try BonjourSublimatory(
-  bindingConfiguration: bindingConfiguration,
-  logger: logger
+  bindingConfiguration: bindingConfiguration
 )
 
 try await bonjour.run() // Long-running task
@@ -121,7 +119,7 @@ try await bonjour.run() // Long-running task
 
 ### Client Discovery
 ```swift
-let client = BonjourClient(logger: logger)
+let client = BonjourClient()
 
 // Get first available URL
 let url = await client.first()

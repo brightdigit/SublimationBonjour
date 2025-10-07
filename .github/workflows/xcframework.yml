@@ -12,12 +12,6 @@ permissions:
   actions: write
 
 on:
-  workflow_dispatch:
-    branches:
-      - main
-  push:
-    branches-ignore:
-      - '*WIP'
   pull_request:
     branches:
       - main
