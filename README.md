@@ -110,8 +110,8 @@ Create a `BindingConfiguration` with:
 
 ```swift
 let bindingConfiguration = BindingConfiguration(
-  host: ["Leo's-Mac.local", "192.168.1.10"],
-  port: 8080
+  hosts: ["Leo's-Mac.local", "192.168.1.10"],
+  port: 8080,
   isSecure: false
 )
 ```
@@ -121,8 +121,7 @@ Create a `BonjourSublimatory` using that `BindingConfiguration` and include your
 
 ```swift
 let bonjour = BonjourSublimatory(
-  bindingConfiguration: bindingConfiguration,
-  logger: app.logger
+  bindingConfiguration: bindingConfiguration
 )
 let sublimation = Sublimation(sublimatory : bonjour)
 ```
@@ -132,8 +131,7 @@ You can also just create a `Sublimation` object:
 
 ```swift
 let sublimation = Sublimation(
-  bindingConfiguration: bindingConfiguration,
-  logger: app.logger
+  bindingConfiguration: bindingConfiguration
 )
 ```
 
@@ -142,7 +140,7 @@ let sublimation = Sublimation(
 On the device, create a `BonjourClient` and either get an `AsyncStream` of `URL` objects via `BonjourClient.urls` or just ask for the first one using `BonjourClient.first()`:
 
 ```swift
-let client = BonjourClient(logger: app.logger)
+let client = BonjourClient()
 let hostURL = await client.first()
 ```
 

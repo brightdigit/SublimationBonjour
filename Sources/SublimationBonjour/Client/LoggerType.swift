@@ -29,18 +29,22 @@
 
 #if canImport(os)
   public import os
-#elseif canImport(Logging)
-  public import Logging
 #endif
 
 // swift-format-ignore-file
 // swiftlint:disable missing_docs file_types_order
-#if canImport(os) || canImport(Logging)
+#if canImport(os)
+  /// Logger type alias for platforms with os framework support.
   @_documentation(visibility: internal)
   public typealias LoggerType = Logger
 #else
+  /// Protocol for logging on platforms without os framework support.
   @_documentation(visibility: internal)
-  public protocol NilLoggerType { func debug(_ message: String) }
+  public protocol NilLoggerType {
+    func debug(_ message: String)
+    func error(_ message: String)
+  }
+  /// Logger type alias for platforms without os framework support.
   @_documentation(visibility: internal)
   public typealias LoggerType = any NilLoggerType
 #endif

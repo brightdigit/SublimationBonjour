@@ -1,0 +1,93 @@
+name: XCFramework Build
+
+# Multi-stage XCFramework build workflow
+# Based on FOD-Web-iOS approach with proper debug symbol handling
+#
+# Architecture:
+# 1. build-archives: Creates separate xcarchive for each platform with dSYMs
+# 2. create-xcframework: Combines all archives into single XCFramework with debug symbols
+
+permissions:
+  contents: write
+  actions: write
+
+on:
+  pull_request:
+    branches:
+      - main
+
+env:
+  PACKAGE_NAME: SublimationBonjour
+
+jobs:
+  build-archives:
+    name: Building Framework Archives
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      matrix:
+        include:
+          - runs-on: macos-26
+            xcode: "/Applications/Xcode_26.0.app"
+            platform: iOS
+            destination: generic/platform=iOS
+          - runs-on: macos-26
+            xcode: "/Applications/Xcode_26.0.app"
+            platform: iOS-Simulator
+            destination: generic/platform=iOS Simulator
+          - runs-on: macos-26
+            xcode: "/Applications/Xcode_26.0.app"
+            platform: watchOS
+            destination: generic/platform=watchOS
+          - runs-on: macos-26
+            xcode: "/Applications/Xcode_26.0.app"
+            platform: watchOS-Simulator
+            destination: generic/platform=watchOS Simulator
+          - runs-on: macos-26
+            xcode: "/Applications/Xcode_26.0.app"
+            platform: macOS
+            destination: generic/platform=macOS
+          - runs-on: macos-26
+            xcode: "/Applications/Xcode_26.0.app"
+            platform: tvOS
+            destination: generic/platform=tvOS
+          - runs-on: macos-26
+            xcode: "/Applications/Xcode_26.0.app"
+            platform: tvOS-Simulator
+            destination: generic/platform=tvOS Simulator
+          - runs-on: macos-26
+            xcode: "/Applications/Xcode_26.0.app"
+            platform: visionOS
+            destination: generic/platform=visionOS
+          - runs-on: macos-26
+            xcode: "/Applications/Xcode_26.0.app"
+            platform: visionOS-Simulator
+            destination: generic/platform=visionOS Simulator
+      fail-fast: true
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Select Xcode
+      run: sudo xcode-select -s ${{ matrix.xcode }}
+
+    - name: Build archive
+      run: |
+        set -eo pipefail
+        xcodebuild archive \
+          -scheme ${{ env.PACKAGE_NAME }} \
+          -destination "${{ matrix.destination }}" \
+          -archivePath ./output/${{ matrix.platform }}/${{ env.PACKAGE_NAME }}.xcarchive \
+          -derivedDataPath ./build/DerivedData \
+          SKIP_INSTALL=NO \
+          BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
+          ONLY_ACTIVE_ARCH=NO \
+          OTHER_SWIFT_FLAGS='$(inherited) -D '\"CLIENT_ONLY\"
+
+    - name: Upload archive
+      if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/v') || github.event_name == 'pull_request'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.platform }}-archive
+        path: ./output/${{ matrix.platform }}
+        retention-days: 0.5
