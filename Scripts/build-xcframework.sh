@@ -3,7 +3,7 @@ set -e  # Exit on any error
 
 # More portable way to get script directory
 if [ -z "$SRCROOT" ]; then
-    SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     PACKAGE_DIR="${SCRIPT_DIR}/.."
 else
     PACKAGE_DIR="${SRCROOT}"
